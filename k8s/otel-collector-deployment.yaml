@@ -1,0 +1,197 @@
+---
+# Source: otel-col/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: otel-collector-account
+---
+# Source: otel-col/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-agent-config-templates
+  labels:
+    team: team-opentelemetry
+    service: otel-agent
+    app: otel-agent
+    component: otel-agent-config-templates
+data:
+  otel-agent-config.yaml: |
+    receivers:
+      hostmetrics:
+        scrapers:
+          cpu:
+          disk:
+          filesystem:
+          load:
+          memory:
+          network:
+          process:
+          processes:
+      otlp:
+        protocols:
+          grpc:
+          http:
+    exporters:
+      otlp:
+        endpoint: "${HOST_IP}:4317"
+        tls: 
+          insecure: true
+      datadog:
+        api:
+          key: '{% with secret "kv/k8s/otel/shared/dd_otel" %}{% .Data.data.api_key %}{% end %}'
+          site: datadoghq.com
+    processors:
+      resourcedetection:
+        # ensures host.name and other important resource tags 
+        # get picked up
+        detectors: [system, env, docker]
+        timeout: 5s
+        override: false
+      # adds various tags related to k8s
+      k8sattributes:
+      batch:
+        timeout: 10s
+    service:
+      pipelines:
+        metrics:
+          receivers: [otlp]
+          processors: [batch, resourcedetection]
+          exporters: [datadog,otlp]
+
+        traces:
+          receivers: [otlp]
+          processors: [resourcedetection, k8sattributes, batch]
+          exporters: [datadog,otlp]
+---
+# Source: otel-col/templates/daemonset.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-agent
+  labels:
+    app: otel-agent
+    component: otel-demo-otel-agent
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: otel-agent
+      component: otel-demo-otel-agent
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: otel-agent
+        app: otel-agent
+        component: otel-demo-otel-agent
+    spec:
+      serviceAccountName: otel-collector-account
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/otel-small
+                    operator: Exists
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - otel-agent
+              topologyKey: "kubernetes.io/hostname"
+      tolerations:
+        - key: node
+          operator: Equal
+          value: otel-small
+          effect: NoSchedule        
+      containers:
+      - name: collector
+        command:
+          - "/otelcol-contrib"
+          - "--config=/etc/datadog/otel-agent-config.yaml"
+        image: registry.ddbuild.io/otel-demo/opentelemetry-collector-contrib:0.55.0
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 1
+            memory: 2Gi
+          requests:
+            cpu: 200m
+            memory: 400Mi
+        env:
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "k8s.pod.ip=$(POD_IP)"
+        ports:
+        - containerPort: 4318 # default port for OpenTelemetry HTTP receiver.
+          hostPort: 4318
+        - containerPort: 4317 # default port for OpenTelemetry gRPC receiver.
+          hostPort: 4317
+        - containerPort: 8888  # Default endpoint for querying metrics.
+        volumeMounts:
+        - name: config
+          mountPath: /etc/datadog
+      initContainers:
+      - name: consul-template-init
+        image: 727006795293.dkr.ecr.us-east-1.amazonaws.com/consul-template:v7424220-83a8930-0.27.2-dd.2
+        imagePullPolicy: IfNotPresent
+        args:
+        - -once
+        - -template=/etc/templates/otel-agent-config.yaml:/etc/datadog/otel-agent-config.yaml
+        env:
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        volumeMounts:
+        - name: otel-agent-config-templates
+          mountPath: /etc/templates
+        - name: config
+          mountPath: /etc/datadog
+      volumes:
+        - name: otlpgen
+          hostPath:
+            path: /otlpgen
+        - name: config
+          emptyDir: {}
+        - name: otel-agent-config-templates
+          configMap:
+            name: otel-agent-config-templates
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-agent
+  labels:
+    app: otel-agent
+    component: otel-demo-otel-agent
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 4318
+      protocol: TCP
+      name: http
+    - port: 4317
+      name: grpc
+    - port: 8888
+      name: http-metrics
+  selector:
+    app: otel-agent
+    component: otel-demo-otel-agent
+---

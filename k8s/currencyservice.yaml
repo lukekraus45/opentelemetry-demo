@@ -1,0 +1,83 @@
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currencyservice
+  labels:
+    app: currencyservice
+    component: otel-demo-currencyservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: currencyservice
+      component: otel-demo-currencyservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: currencyservice
+        app: currencyservice
+        component: otel-demo-currencyservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: currencyservice
+        image:  registry.ddbuild.io/otel-demo/currencyservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "otel-agent"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):4318"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):4317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=currencyservice"
+        - name: APP_ENV
+          value: staging
+        - name: PORT
+          value: "7000"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: currencyservice
+  labels:
+    app: currencyservice
+    component: otel-demo-currencyservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 7000
+      protocol: TCP
+      name: http
+  selector:
+    app: currencyservice
+    component: otel-demo-currencyservice
+---

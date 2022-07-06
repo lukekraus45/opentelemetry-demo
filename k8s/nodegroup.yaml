@@ -1,0 +1,28 @@
+# Source: common/templates/nodegroup.yaml
+apiVersion: datadoghq.com/v1
+kind: NodeGroup
+metadata:
+  name: otel-small
+  namespace: otel
+  labels:
+    team: "team-opentelemetry"
+
+spec:
+  options:
+    clusterAutoscaler: true
+    clusterAutoscalerOptions:
+      minSize: 1
+      maxSize: 999
+      initialSize: 1
+      scaleDownUtilizationThreshold: 0.5
+  gcp:
+    instanceTemplate:
+      properties:
+        machineType: n2-standard-2
+  aws:
+    launchConfiguration:
+      instanceType: m5.large
+
+  azure:
+    virtualMachineScaleSetSKU:
+      name: Standard_D2s_v3
