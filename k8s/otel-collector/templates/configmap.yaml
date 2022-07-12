@@ -1,21 +1,36 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: otel-agent-conf
+  name: {{ $.Chart.Name }}-config-templates
   labels:
-    app: opentelemetry
-    component: otel-agent-conf
+    app: {{ $.Chart.Name }} 
+    component: {{ $.Chart.Name }}-config-templates
 data:
-  otel-agent-config: |
+  {{ $.Chart.Name }}-config.yaml: |
     receivers:
+      hostmetrics:
+        scrapers:
+          cpu:
+          disk:
+          filesystem:
+          load:
+          memory:
+          network:
+          process:
+          processes:
       otlp:
         protocols:
           grpc:
           http:
     exporters:
+      otlp:
+        endpoint: "${HOST_IP}:4317"
+        tls: 
+          insecure: true
       datadog:
         api:
-          key: '{% with secret "applications/datadog/shared/sentry" %}{% .Data.agent_and_integrations_dsn %}{% end %}'
+          key: '{% with secret "kv/k8s/otel/shared/dd_otel" %}{% .Data.data.api_key %}{% end %}'
+          site: datadoghq.com
     processors:
       resourcedetection:
         # ensures host.name and other important resource tags 
@@ -29,7 +44,12 @@ data:
         timeout: 10s
     service:
       pipelines:
+        metrics:
+          receivers: [otlp]
+          processors: [batch, resourcedetection]
+          exporters: [datadog,otlp]
+
         traces:
           receivers: [otlp]
           processors: [resourcedetection, k8sattributes, batch]
-          exporters: [datadog]
+          exporters: [datadog,otlp]

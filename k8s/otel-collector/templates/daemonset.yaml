@@ -1,34 +1,33 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: otel-agent
+  name: {{ $.Chart.Name }}
   labels:
-    app: opentelemetry
-    component: otel-collector
+    app: {{ $.Chart.Name }}
 spec:
 
   selector:
     matchLabels:
-      app: opentelemetry
-      component: otel-collector
+      app: {{ $.Chart.Name }}
   template:
     metadata:
       labels:
-        app: opentelemetry
-        component: otel-collector
+        app: {{ $.Chart.Name }} 
+        service: {{ $.Chart.Name }}
+        team: {{ $.Values.team }}
     spec:
       tolerations:
         - key: node
           operator: Equal
           value: otel-small
           effect: NoSchedule        
-      serviceAccountName: otel-collector-account
+      serviceAccountName: {{ $.Chart.Name }}
       containers:
       - name: collector
         command:
           - "/otelcol-contrib"
-          - "--config=/conf/otel-agent-config.yaml"
-        image: otel/opentelemetry-collector-contrib:0.54.0
+          - "--config=/etc/datadog/{{ $.Chart.Name }}-config.yaml"
+        image:  registry.ddbuild.io/otel-demo/opentelemetry-collector-contrib:0.55.0
         resources:
           limits:
             cpu: 1
@@ -45,43 +44,40 @@ spec:
           value: "k8s.pod.ip=$(POD_IP)"
         ports:
         - containerPort: 4318 # default port for OpenTelemetry HTTP receiver.
-          hostPort: 4318
+          hostPort: 44318
         - containerPort: 4317 # default port for OpenTelemetry gRPC receiver.
-          hostPort: 4317
+          hostPort: 44317
         - containerPort: 8888  # Default endpoint for querying metrics.
-        volumeMounts:
-        - name: otel-agent-config-vol
-          mountPath: /conf
-      initContainers:
-      - name: consul-template-init
-        image: 727006795293.dkr.ecr.us-east-1.amazonaws.com/consul-template:v7424220-83a8930-0.27.2-dd.2
-        imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: config
           mountPath: /etc/datadog
-        - name: templates
-          mountPath: /etc/templates
+      initContainers:
+      - name: consul-template-init
+        image:  "{{ $.Values.global.docker.registry }}/{{ $.Values.global.consulTemplate.image.name }}:{{ $.Values.global.consulTemplate.image.tag }}"
+        imagePullPolicy: IfNotPresent
         args:
         - -once
-        - -template=/etc/templates/otel-agent-config.yaml:/conf/otel-agent-config.yaml
+        - -template=/etc/templates/{{ $.Chart.Name }}-config.yaml:/etc/datadog/{{ $.Chart.Name }}-config.yaml
         env:
         - name: DD_DATACENTER
           value: us1.staging.dog
         - name: DD_SITE
           value: datad0g.com
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        volumeMounts:
+        - name: {{ $.Chart.Name }}-config-templates
+          mountPath: /etc/templates
+        - name: config
+          mountPath: /etc/datadog
       volumes:
-      - name: templates
-        configMap:
-          name: {{ $.Chart.Name }}-templates
-      - name: config
-        emptyDir: {} 
-      volumes:
-      - name: otlpgen
-        hostPath:
-          path: /otlpgen
-      - name: otel-agent-config-vol
-        configMap:
-          name: otel-agent-conf
-          items:
-            - key: otel-agent-config
-              path: otel-agent-config.yaml
+        - name: otlpgen
+          hostPath:
+            path: /otlpgen
+        - name: config
+          emptyDir: {}
+        - name: {{ $.Chart.Name }}-config-templates
+          configMap:
+            name: {{ $.Chart.Name }}-config-templates

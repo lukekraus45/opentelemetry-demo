@@ -1,0 +1,58 @@
+load("@com_datadoghq_cnab_tools//rules:helm.bzl", "helm_chart")
+load("@com_datadoghq_cnab_tools//rules:workflow.bzl", "cnab_workflow")
+load("@com_datadoghq_datacenter_config//rules:helm.bzl", "dd_helm_cnab", "dd_helm_cnab_installation")
+
+APP = "otel-collector"
+
+ENVIRONMENTS = {
+    "staging": {
+        "slack": "opentelemetry",
+        "clusters": [
+            {
+                "cluster": "stingchameleon.us1.staging.dog",
+                "namespace": "otel",
+            },
+        ]
+    },
+}
+# Helm Definitions
+helm_chart(
+    name="chart",
+    srcs=[
+             "Chart.yaml",
+             "values.yaml",
+         ] + glob(["templates/**"]),
+)
+
+dd_helm_cnab(
+    name=APP,
+    chart=":chart",
+    repository="opentelemetry-demo-webstore/opentelemetry-collector/{}".format(APP),
+)
+
+# Generate Installations
+# inventories-toolbox.resources-intake.gizmo.us1.staging.dog
+# inventories-toolbox.resources-intake.emboar.us1.prod.dog
+# inventories-toolbox.resources-intake.spirou.eu1.prod.dog
+[
+    dd_helm_cnab_installation(
+        name="{}.{}.{}".format(APP, cluster["namespace"], cluster["cluster"]),
+        bundle=":{}".format(APP),
+        description="{} on {}".format(APP, cluster["cluster"]),
+        parameters={
+            "judgePostDeploy": "true",
+        },
+        value_files=[],
+    ) for env, environment in ENVIRONMENTS.items() for cluster in environment.get("clusters", [])
+]
+
+# Generate Workflows
+[
+    cnab_workflow(
+        name=env,
+        description="Deploy {} to {}".format(APP, env),
+        parallel=False,
+        tasks=[":{}.{}.{}".format(APP, cluster["namespace"], cluster["cluster"]) for
+               cluster in environment.get("clusters")],
+    ) for env, environment in ENVIRONMENTS.items()
+]

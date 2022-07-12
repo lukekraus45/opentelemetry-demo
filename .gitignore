@@ -23,3 +23,8 @@ obj/
 .idea/
 build/
 node_modules/
+bazel-bin
+bazel-out
+bazel-testlogs
+bazel-opentelemetry-demo-webstore
+
