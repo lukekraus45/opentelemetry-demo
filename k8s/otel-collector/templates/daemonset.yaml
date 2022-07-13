@@ -43,9 +43,9 @@ spec:
         - name: OTEL_RESOURCE_ATTRIBUTES
           value: "k8s.pod.ip=$(POD_IP)"
         ports:
-        - containerPort: 4318 # default port for OpenTelemetry HTTP receiver.
+        - containerPort: 44318 # default port for OpenTelemetry HTTP receiver.
           hostPort: 44318
-        - containerPort: 4317 # default port for OpenTelemetry gRPC receiver.
+        - containerPort: 44317 # default port for OpenTelemetry gRPC receiver.
           hostPort: 44317
         - containerPort: 8888  # Default endpoint for querying metrics.
         volumeMounts:
