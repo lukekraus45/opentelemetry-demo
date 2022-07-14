@@ -21,9 +21,9 @@ data:
       otlp:
         protocols:
           grpc:
-            endpoint: ":44317"
+            endpoint: ":5317"
           http:
-            endpoint: ":44318"
+            endpoint: ":5318"
     exporters:
       otlp:
         endpoint: "${HOST_IP}:4317"
@@ -37,7 +37,7 @@ data:
       resourcedetection:
         # ensures host.name and other important resource tags 
         # get picked up
-        detectors: [system, env, docker]
+        detectors: [system, env]
         timeout: 5s
         override: false
       # adds various tags related to k8s

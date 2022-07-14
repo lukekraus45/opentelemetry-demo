@@ -16,6 +16,7 @@ spec:
         service: {{ $.Chart.Name }}
         team: {{ $.Values.team }}
     spec:
+      hostNetwork: true
       tolerations:
         - key: node
           operator: Equal
@@ -43,10 +44,10 @@ spec:
         - name: OTEL_RESOURCE_ATTRIBUTES
           value: "k8s.pod.ip=$(POD_IP)"
         ports:
-        - containerPort: 44318 # default port for OpenTelemetry HTTP receiver.
-          hostPort: 44318
-        - containerPort: 44317 # default port for OpenTelemetry gRPC receiver.
-          hostPort: 44317
+        - containerPort: 5318 # default port for OpenTelemetry HTTP receiver.
+          hostPort: 5318
+        - containerPort: 5317 # default port for OpenTelemetry gRPC receiver.
+          hostPort: 5317
         - containerPort: 8888  # Default endpoint for querying metrics.
         volumeMounts:
         - name: config

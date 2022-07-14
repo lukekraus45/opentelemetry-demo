@@ -40,6 +40,13 @@ spec:
             memory: 200Mi
             cpu: 200m
         env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
         - name: HOST_IP
           valueFrom:
             fieldRef:
@@ -50,13 +57,13 @@ spec:
         - name: DD_SITE
           value: datad0g.com
         - name: OTEL_AGENT_ENDPOINT
-          value: "otel-agent"
+          value: "$(HOST_IP)"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):4318"
+          value: "http://$(OTEL_AGENT_ENDPOINT):5318"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):4317"
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=featureflagservice"
+          value: "service.name=featureflagservice,deployment.environment=staging"
         - name: APP_ENV
           value: staging
         - name: PORT
