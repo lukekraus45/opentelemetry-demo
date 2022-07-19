@@ -1,26 +1,25 @@
 
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: loadgenerator
+  name: cartservice
   labels:
-    app: loadgenerator
-    component: otel-demo-loadgenerator
+    app: cartservice
+    component: otel-demo-cartservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: loadgenerator
-      component: otel-demo-loadgenerator
+      app: cartservice
+      component: otel-demo-cartservice
   template:
     metadata:
       labels:
         team: team-opentelemetry
-        service: loadgenerator
-        app: loadgenerator
-        component: otel-demo-loadgenerator
+        service: cartservice
+        app: cartservice
+        component: otel-demo-cartservice
     spec:
       
       tolerations:
@@ -29,8 +28,8 @@ spec:
         value: otel-small
         effect: NoSchedule
       containers:
-      - name: loadgenerator
-        image:  registry.ddbuild.io/otel-demo/loadgenerator:v0.1
+      - name: cartservice
+        image:  registry.ddbuild.io/otel-demo/cartservice:v0.1
         imagePullPolicy: Always
         resources:
           limits:
@@ -59,20 +58,37 @@ spec:
         - name: OTEL_AGENT_ENDPOINT
           value: "$(HOST_IP)"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5318"
+          value: "http://$(OTEL_AGENT_ENDPOINT):4318"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+          value: "http://$(OTEL_AGENT_ENDPOINT):4317"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=loadgenerator,deployment.environment=otel"
+          value: "service.name=cartservice,deployment.environment=otel-dd-ingest"
         - name: APP_ENV
-          value: otel
-        - name: FRONTEND_PORT
-          value: "8080"
-        - name: FRONTEND_ADDR
-          value: "frontend:$(FRONTEND_PORT)"
-        - name: USERS
-          value: "10"
-        - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
-          value: python
+          value: otel-dd-ingest
+        - name: CART_SERVICE_PORT
+          value: "7070"
+        - name: ASPNETCORE_URLS
+          value: "http://*:$(CART_SERVICE_PORT)"
+        - name: REDIS_ADDR
+          value: "redis.otel-dd-ingest"
 
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cartservice
+  labels:
+    app: cartservice
+    component: otel-demo-cartservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 7070
+      protocol: TCP
+      name: http
+  selector:
+    app: cartservice
+    component: otel-demo-cartservice
+---
+

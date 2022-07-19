@@ -4,23 +4,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: loadgenerator
+  name: featureflagservice
   labels:
-    app: loadgenerator
-    component: otel-demo-loadgenerator
+    app: featureflagservice
+    component: otel-demo-featureflagservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: loadgenerator
-      component: otel-demo-loadgenerator
+      app: featureflagservice
+      component: otel-demo-featureflagservice
   template:
     metadata:
       labels:
         team: team-opentelemetry
-        service: loadgenerator
-        app: loadgenerator
-        component: otel-demo-loadgenerator
+        service: featureflagservice
+        app: featureflagservice
+        component: otel-demo-featureflagservice
     spec:
       
       tolerations:
@@ -29,8 +29,8 @@ spec:
         value: otel-small
         effect: NoSchedule
       containers:
-      - name: loadgenerator
-        image:  registry.ddbuild.io/otel-demo/loadgenerator:v0.1
+      - name: featureflagservice
+        image:  registry.ddbuild.io/otel-demo/featureflagservice:v0.1
         imagePullPolicy: Always
         resources:
           limits:
@@ -59,20 +59,38 @@ spec:
         - name: OTEL_AGENT_ENDPOINT
           value: "$(HOST_IP)"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5318"
+          value: "http://$(OTEL_AGENT_ENDPOINT):4318"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+          value: "http://$(OTEL_AGENT_ENDPOINT):4317"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=loadgenerator,deployment.environment=otel"
+          value: "service.name=featureflagservice,deployment.environment=otel-dd-ingest"
         - name: APP_ENV
-          value: otel
-        - name: FRONTEND_PORT
-          value: "8080"
-        - name: FRONTEND_ADDR
-          value: "frontend:$(FRONTEND_PORT)"
-        - name: USERS
-          value: "10"
-        - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
-          value: python
+          value: otel-dd-ingest
+        - name: PORT
+          value: "50052"
+        - name: GRPC_PORT
+          value: "50053"
+        - name: DATABASE_URL
+          value: "ecto://ffs:ffs@postgres:5432/ffs"
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: featureflagservice
+  labels:
+    app: featureflagservice
+    component: otel-demo-featureflagservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 50052
+      protocol: TCP
+      name: http
+    - port: 50053
+      name: grpc
+  selector:
+    app: featureflagservice
+    component: otel-demo-featureflagservice
 ---

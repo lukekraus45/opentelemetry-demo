@@ -49,7 +49,7 @@ spec:
         - name: DD_SITE
           value: datad0g.com
         - name: APP_ENV
-          value: otel
+          value: otel-dd-ingest
         - name: POSTGRES_USER
           value: ffs
         - name: POSTGRES_DB

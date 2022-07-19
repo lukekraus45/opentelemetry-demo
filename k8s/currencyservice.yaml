@@ -63,9 +63,9 @@ spec:
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
           value: "http://$(OTEL_AGENT_ENDPOINT):5317"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=currencyservice,deployment.environment=staging"
+          value: "service.name=currencyservice,deployment.environment=otel"
         - name: APP_ENV
-          value: staging
+          value: otel
         - name: PORT
           value: "7000"
 

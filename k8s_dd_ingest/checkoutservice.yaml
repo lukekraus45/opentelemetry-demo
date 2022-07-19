@@ -1,25 +1,26 @@
 
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: recommendationservice
+  name: checkoutservice
   labels:
-    app: recommendationservice
-    component: otel-demo-recommendationservice
+    app: checkoutservice
+    component: otel-demo-checkoutservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: recommendationservice
-      component: otel-demo-recommendationservice
+      app: checkoutservice
+      component: otel-demo-checkoutservice
   template:
     metadata:
       labels:
         team: team-opentelemetry
-        service: recommendationservice
-        app: recommendationservice
-        component: otel-demo-recommendationservice
+        service: checkoutservice
+        app: checkoutservice
+        component: otel-demo-checkoutservice
     spec:
       
       tolerations:
@@ -28,8 +29,8 @@ spec:
         value: otel-small
         effect: NoSchedule
       containers:
-      - name: recommendationservice
-        image:  registry.ddbuild.io/otel-demo/recommendationservice:v0.1
+      - name: checkoutservice
+        image:  registry.ddbuild.io/otel-demo/checkoutservice:v0.1
         imagePullPolicy: Always
         resources:
           limits:
@@ -58,21 +59,39 @@ spec:
         - name: OTEL_AGENT_ENDPOINT
           value: "$(HOST_IP)"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5318"
+          value: "http://$(OTEL_AGENT_ENDPOINT):4318"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+          value: "http://$(OTEL_AGENT_ENDPOINT):4317"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=recommendationservice,deployment.environment=otel"
+          value: "service.name=checkoutservice,deployment.environment=otel-dd-ingest"
         - name: APP_ENV
-          value: otel
-        - name: RECOMMENDATION_SERVICE_PORT
-          value: "9001"
-        - name: OTEL_PYTHON_LOG_CORRELATION
-          value: "true"
+          value: otel-dd-ingest
+        - name: CHECKOUT_SERVICE_PORT
+          value: "5050"
+        - name: CART_SERVICE_PORT
+          value: "7070"
+        - name: CART_SERVICE_ADDR
+          value: "cartservice:$(CART_SERVICE_PORT)"
+        - name: CURRENCY_SERVICE_PORT
+          value: "7000"
+        - name: CURRENCY_SERVICE_ADDR
+          value: "currencyservice:$(CURRENCY_SERVICE_PORT)"
+        - name: EMAIL_SERVICE_PORT
+          value: "8080"
+        - name: EMAIL_SERVICE_ADDR
+          value: "http://emailservice:$(EMAIL_SERVICE_PORT)"
+        - name: PAYMENT_SERVICE_PORT
+          value: "50051"
+        - name: PAYMENT_SERVICE_ADDR
+          value: "paymentservice:$(PAYMENT_SERVICE_PORT)"
         - name: PRODUCT_CATALOG_SERVICE_PORT
           value: "3550"
         - name: PRODUCT_CATALOG_SERVICE_ADDR
           value: "productcatalogservice:$(PRODUCT_CATALOG_SERVICE_PORT)"
+        - name: SHIPPING_SERVICE_PORT
+          value: "50051"
+        - name: SHIPPING_SERVICE_ADDR
+          value: "shippingservice:$(SHIPPING_SERVICE_PORT)"
 
 
 
@@ -80,19 +99,18 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: recommendationservice
+  name: checkoutservice
   labels:
-    app: recommendationservice
-    component: otel-demo-recommendationservice
+    app: checkoutservice
+    component: otel-demo-checkoutservice
 spec:
   clusterIP: None
   type: ClusterIP
   ports:
-    - port: 9555
+    - port: 5050
       protocol: TCP
       name: http
   selector:
-    app: recommendationservice
-    component: otel-demo-recommendationservice
+    app: checkoutservice
+    component: otel-demo-checkoutservice
 ---
-

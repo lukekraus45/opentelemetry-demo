@@ -71,7 +71,7 @@ spec:
           - name: DD_SITE
             value: datad0g.com
           - name: APP_ENV
-            value: otel
+            value: otel-dd-ingest
         volumeMounts:
           - name: config
             mountPath: /etc/config

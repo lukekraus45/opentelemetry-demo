@@ -1,26 +1,24 @@
-
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: loadgenerator
+  name: productcatalogservice
   labels:
-    app: loadgenerator
-    component: otel-demo-loadgenerator
+    app: productcatalogservice
+    component: otel-demo-productcatalogservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: loadgenerator
-      component: otel-demo-loadgenerator
+      app: productcatalogservice
+      component: otel-demo-productcatalogservice
   template:
     metadata:
       labels:
         team: team-opentelemetry
-        service: loadgenerator
-        app: loadgenerator
-        component: otel-demo-loadgenerator
+        service: productcatalogservice
+        app: productcatalogservice
+        component: otel-demo-productcatalogservice
     spec:
       
       tolerations:
@@ -29,8 +27,8 @@ spec:
         value: otel-small
         effect: NoSchedule
       containers:
-      - name: loadgenerator
-        image:  registry.ddbuild.io/otel-demo/loadgenerator:v0.1
+      - name: productcatalogservice
+        image:  registry.ddbuild.io/otel-demo/productcatalogservice:v0.1
         imagePullPolicy: Always
         resources:
           limits:
@@ -59,20 +57,32 @@ spec:
         - name: OTEL_AGENT_ENDPOINT
           value: "$(HOST_IP)"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5318"
+          value: "http://$(OTEL_AGENT_ENDPOINT):4318"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+          value: "http://$(OTEL_AGENT_ENDPOINT):4317"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=loadgenerator,deployment.environment=otel"
+          value: "service.name=productcatalogservice,deployment.environment=otel-dd-ingest"
         - name: APP_ENV
-          value: otel
-        - name: FRONTEND_PORT
-          value: "8080"
-        - name: FRONTEND_ADDR
-          value: "frontend:$(FRONTEND_PORT)"
-        - name: USERS
-          value: "10"
-        - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
-          value: python
+          value: otel-dd-ingest
+        - name: PRODUCT_CATALOG_SERVICE_PORT
+          value: "3550"
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: productcatalogservice
+  labels:
+    app: productcatalogservice
+    component: otel-demo-productcatalogservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app: productcatalogservice
+    component: otel-demo-productcatalogservice
 ---

@@ -61,11 +61,11 @@ spec:
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
           value: "http://$(OTEL_AGENT_ENDPOINT):5317"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=emailservice,deployment.environment=staging"
+          value: "service.name=emailservice,deployment.environment=otel"
         - name: PORT
           value: "8080"
         - name: APP_ENV
-          value: staging
+          value: otel
 
 ---
 apiVersion: v1

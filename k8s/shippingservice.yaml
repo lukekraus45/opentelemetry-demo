@@ -62,9 +62,9 @@ spec:
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
           value: "http://$(OTEL_AGENT_ENDPOINT):5317"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=shippingservice,deployment.environment=staging"
+          value: "service.name=shippingservice,deployment.environment=otel"
         - name: APP_ENV
-          value: staging
+          value: otel
         - name: SHIPPING_SERVICE_PORT
           value: "50051"
 

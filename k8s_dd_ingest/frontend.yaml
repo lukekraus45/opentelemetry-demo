@@ -58,13 +58,13 @@ spec:
         - name: OTEL_AGENT_ENDPOINT
           value: "$(HOST_IP)"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5318"
+          value: "http://$(OTEL_AGENT_ENDPOINT):4318"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+          value: "http://$(OTEL_AGENT_ENDPOINT):4317"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=frontend,,deployment.environment=otel"
+          value: "service.name=frontend,,deployment.environment=otel-dd-ingest"
         - name: APP_ENV
-          value: otel
+          value: otel-dd-ingest
         - name: AD_SERVICE_PORT
           value: "9555"
         - name: AD_SERVICE_ADDR
