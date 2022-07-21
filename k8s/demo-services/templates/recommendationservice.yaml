@@ -3,23 +3,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: shippingservice
+  name: recommendationservice
   labels:
-    app: shippingservice
-    component: otel-demo-shippingservice
+    app: recommendationservice
+    component: otel-demo-recommendationservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: shippingservice
-      component: otel-demo-shippingservice
+      app: recommendationservice
+      component: otel-demo-recommendationservice
   template:
     metadata:
       labels:
         team: team-opentelemetry
-        service: shippingservice
-        app: shippingservice
-        component: otel-demo-shippingservice
+        service: recommendationservice
+        app: recommendationservice
+        component: otel-demo-recommendationservice
     spec:
       
       tolerations:
@@ -28,8 +28,8 @@ spec:
         value: otel-small
         effect: NoSchedule
       containers:
-      - name: shippingservice
-        image:  registry.ddbuild.io/otel-demo/shippingservice:v0.1
+      - name: recommendationservice
+        image:  registry.ddbuild.io/otel-demo/recommendationservice:v0.1
         imagePullPolicy: Always
         resources:
           limits:
@@ -52,38 +52,43 @@ spec:
               fieldPath: status.hostIP
           # The application SDK must use this environment variable in order to succesfully
         - name: DD_DATACENTER
-          value: us1.staging.dog
+          value: {{ $.Values.datacenter }}
         - name: DD_SITE
           value: datad0g.com
         - name: OTEL_AGENT_ENDPOINT
           value: "$(HOST_IP)"
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5318"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+          value: "http://$(OTEL_AGENT_ENDPOINT):{{ $.Values.otlp_port }}"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=shippingservice,deployment.environment=otel"
-        - name: APP_ENV
-          value: otel
-        - name: SHIPPING_SERVICE_PORT
-          value: "50051"
+          value: "service.name=recommendationservice,deployment.environment={{ $.Values.namespace }}"
+        - name: RECOMMENDATION_SERVICE_PORT
+          value: "9001"
+        - name: OTEL_PYTHON_LOG_CORRELATION
+          value: "true"
+        - name: PRODUCT_CATALOG_SERVICE_PORT
+          value: "3550"
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          value: "productcatalogservice:$(PRODUCT_CATALOG_SERVICE_PORT)"
+
+
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: shippingservice
+  name: recommendationservice
   labels:
-    app: shippingservice
-    component: otel-demo-shippingservice
+    app: recommendationservice
+    component: otel-demo-recommendationservice
 spec:
   clusterIP: None
   type: ClusterIP
   ports:
-    - port: 50051
+    - port: 9555
       protocol: TCP
       name: http
   selector:
-    app: shippingservice
-    component: otel-demo-shippingservice
+    app: recommendationservice
+    component: otel-demo-recommendationservice
 ---
+

@@ -1,25 +1,26 @@
 
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: checkoutservice
   labels:
-    app: frontend
-    component: otel-demo-frontend
+    app: checkoutservice
+    component: otel-demo-checkoutservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend
-      component: otel-demo-frontend
+      app: checkoutservice
+      component: otel-demo-checkoutservice
   template:
     metadata:
       labels:
         team: team-opentelemetry
-        service: frontend
-        app: frontend
-        component: otel-demo-frontend
+        service: checkoutservice
+        app: checkoutservice
+        component: otel-demo-checkoutservice
     spec:
       
       tolerations:
@@ -28,8 +29,8 @@ spec:
         value: otel-small
         effect: NoSchedule
       containers:
-      - name: frontend
-        image:  registry.ddbuild.io/otel-demo/frontend:v0.1
+      - name: checkoutservice
+        image:  registry.ddbuild.io/otel-demo/checkoutservice:v0.1
         imagePullPolicy: Always
         resources:
           limits:
@@ -52,31 +53,21 @@ spec:
               fieldPath: status.hostIP
           # The application SDK must use this environment variable in order to succesfully
         - name: DD_DATACENTER
-          value: us1.staging.dog
+          value: {{ $.Values.datacenter }}
         - name: DD_SITE
           value: datad0g.com
         - name: OTEL_AGENT_ENDPOINT
           value: "$(HOST_IP)"
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5318"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+          value: "http://$(OTEL_AGENT_ENDPOINT):{{ $.Values.otlp_port }}"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=frontend,,deployment.environment=otel"
-        - name: APP_ENV
-          value: otel
-        - name: AD_SERVICE_PORT
-          value: "9555"
-        - name: AD_SERVICE_ADDR
-          value: "adservice:$(AD_SERVICE_PORT)"
+          value: "service.name=checkoutservice,deployment.environment={{ $.Values.namespace }}"
+        - name: CHECKOUT_SERVICE_PORT
+          value: "5050"
         - name: CART_SERVICE_PORT
           value: "7070"
         - name: CART_SERVICE_ADDR
           value: "cartservice:$(CART_SERVICE_PORT)"
-        - name: CHECKOUT_SERVICE_PORT
-          value: "5050"
-        - name: CHECKOUT_SERVICE_ADDR
-          value: "checkoutservice:$(CHECKOUT_SERVICE_PORT)"
         - name: CURRENCY_SERVICE_PORT
           value: "7000"
         - name: CURRENCY_SERVICE_ADDR
@@ -85,10 +76,6 @@ spec:
           value: "8080"
         - name: EMAIL_SERVICE_ADDR
           value: "http://emailservice:$(EMAIL_SERVICE_PORT)"
-        - name: FRONTEND_PORT
-          value: "8080"
-        - name: FRONTEND_ADDR
-          value: ":$(FRONTEND_PORT)"
         - name: PAYMENT_SERVICE_PORT
           value: "50051"
         - name: PAYMENT_SERVICE_ADDR
@@ -97,31 +84,29 @@ spec:
           value: "3550"
         - name: PRODUCT_CATALOG_SERVICE_ADDR
           value: "productcatalogservice:$(PRODUCT_CATALOG_SERVICE_PORT)"
-        - name: RECOMMENDATION_SERVICE_PORT
-          value: "9001"
-        - name: RECOMMENDATION_SERVICE_ADDR
-          value: "recommendationservice:$(RECOMMENDATION_SERVICE_PORT)"
         - name: SHIPPING_SERVICE_PORT
           value: "50051"
         - name: SHIPPING_SERVICE_ADDR
           value: "shippingservice:$(SHIPPING_SERVICE_PORT)"
 
+
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend
+  name: checkoutservice
   labels:
-    app: frontend
-    component: otel-demo-frontend
+    app: checkoutservice
+    component: otel-demo-checkoutservice
 spec:
   clusterIP: None
   type: ClusterIP
   ports:
-    - port: 8080
+    - port: 5050
       protocol: TCP
       name: http
   selector:
-    app: frontend
-    component: otel-demo-frontend
+    app: checkoutservice
+    component: otel-demo-checkoutservice
 ---

@@ -1,25 +1,26 @@
 
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cartservice
+  name: loadgenerator
   labels:
-    app: cartservice
-    component: otel-demo-cartservice
+    app: loadgenerator
+    component: otel-demo-loadgenerator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cartservice
-      component: otel-demo-cartservice
+      app: loadgenerator
+      component: otel-demo-loadgenerator
   template:
     metadata:
       labels:
         team: team-opentelemetry
-        service: cartservice
-        app: cartservice
-        component: otel-demo-cartservice
+        service: loadgenerator
+        app: loadgenerator
+        component: otel-demo-loadgenerator
     spec:
       
       tolerations:
@@ -28,8 +29,8 @@ spec:
         value: otel-small
         effect: NoSchedule
       containers:
-      - name: cartservice
-        image:  registry.ddbuild.io/otel-demo/cartservice:v0.1
+      - name: loadgenerator
+        image:  registry.ddbuild.io/otel-demo/loadgenerator:v0.1
         imagePullPolicy: Always
         resources:
           limits:
@@ -52,43 +53,22 @@ spec:
               fieldPath: status.hostIP
           # The application SDK must use this environment variable in order to succesfully
         - name: DD_DATACENTER
-          value: us1.staging.dog
+          value: {{ $.Values.datacenter }}
         - name: DD_SITE
           value: datad0g.com
         - name: OTEL_AGENT_ENDPOINT
           value: "$(HOST_IP)"
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5318"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+          value: "http://$(OTEL_AGENT_ENDPOINT):{{ $.Values.otlp_port }}"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=cartservice,deployment.environment=otel"
-        - name: APP_ENV
-          value: otel
-        - name: CART_SERVICE_PORT
-          value: "7070"
-        - name: ASPNETCORE_URLS
-          value: "http://*:$(CART_SERVICE_PORT)"
-        - name: REDIS_ADDR
-          value: "redis"
+          value: "service.name=loadgenerator,deployment.environment={{ $.Values.namespace }}"
+        - name: FRONTEND_PORT
+          value: "8080"
+        - name: FRONTEND_ADDR
+          value: "frontend:$(FRONTEND_PORT)"
+        - name: USERS
+          value: "10"
+        - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
+          value: python
 
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: cartservice
-  labels:
-    app: cartservice
-    component: otel-demo-cartservice
-spec:
-  clusterIP: None
-  type: ClusterIP
-  ports:
-    - port: 7070
-      protocol: TCP
-      name: http
-  selector:
-    app: cartservice
-    component: otel-demo-cartservice
----
-

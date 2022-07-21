@@ -26,4 +26,4 @@ bazel-bin
 bazel-out
 bazel-testlogs
 bazel-opentelemetry-demo-webstore
-
+src/shippingservice/target/

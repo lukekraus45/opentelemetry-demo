@@ -1,0 +1,4 @@
+apiVersion: v2
+name: demo-services
+description: A Helm chart for opentelemetry-demo-webstore
+version: 0.1.0

@@ -1,24 +1,26 @@
+
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: emailservice
+  name: featureflagservice
   labels:
-    app: emailservice
-    component: otel-demo-emailservice
+    app: featureflagservice
+    component: otel-demo-featureflagservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: emailservice
-      component: otel-demo-emailservice
+      app: featureflagservice
+      component: otel-demo-featureflagservice
   template:
     metadata:
       labels:
         team: team-opentelemetry
-        service: emailservice
-        app: emailservice
-        component: otel-demo-emailservice
+        service: featureflagservice
+        app: featureflagservice
+        component: otel-demo-featureflagservice
     spec:
       
       tolerations:
@@ -27,8 +29,8 @@ spec:
         value: otel-small
         effect: NoSchedule
       containers:
-      - name: emailservice
-        image:  registry.ddbuild.io/otel-demo/emailservice:v0.1
+      - name: featureflagservice
+        image:  registry.ddbuild.io/otel-demo/featureflagservice:v0.1
         imagePullPolicy: Always
         resources:
           limits:
@@ -51,38 +53,40 @@ spec:
               fieldPath: status.hostIP
           # The application SDK must use this environment variable in order to succesfully
         - name: DD_DATACENTER
-          value: us1.staging.dog
+          value: {{ $.Values.datacenter }}
         - name: DD_SITE
           value: datad0g.com
         - name: OTEL_AGENT_ENDPOINT
           value: "$(HOST_IP)"
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5318"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+          value: "http://$(OTEL_AGENT_ENDPOINT):{{ $.Values.otlp_port }}"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=emailservice,deployment.environment=otel"
+          value: "service.name=featureflagservice,deployment.environment={{ $.Values.namespace }}"
         - name: PORT
-          value: "8080"
-        - name: APP_ENV
-          value: otel
+          value: "50052"
+        - name: GRPC_PORT
+          value: "50053"
+        - name: DATABASE_URL
+          value: "ecto://ffs:ffs@postgres:5432/ffs"
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: emailservice
+  name: featureflagservice
   labels:
-    app: emailservice
-    component: otel-demo-emailservice
+    app: featureflagservice
+    component: otel-demo-featureflagservice
 spec:
   clusterIP: None
   type: ClusterIP
   ports:
-    - port: 8080
+    - port: 50052
       protocol: TCP
       name: http
+    - port: 50053
+      name: grpc
   selector:
-    app: emailservice
-    component: otel-demo-emailservice
+    app: featureflagservice
+    component: otel-demo-featureflagservice
 ---

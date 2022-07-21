@@ -67,11 +67,9 @@ spec:
                 fieldPath: status.hostIP
             # The application SDK must use this environment variable in order to succesfully
           - name: DD_DATACENTER
-            value: us1.staging.dog
+            value: {{ $.Values.datacenter }}
           - name: DD_SITE
             value: datad0g.com
-          - name: APP_ENV
-            value: otel
         volumeMounts:
           - name: config
             mountPath: /etc/config
