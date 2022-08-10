@@ -11,6 +11,8 @@ spec:
       app: {{ $.Chart.Name }}
   template:
     metadata:
+      annotations:
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum }}
       labels:
         app: {{ $.Chart.Name }} 
         service: {{ $.Chart.Name }}
@@ -28,7 +30,7 @@ spec:
         command:
           - "/otelcol-contrib"
           - "--config=/etc/datadog/{{ $.Chart.Name }}-config.yaml"
-        image:  registry.ddbuild.io/otel-demo/opentelemetry-collector-contrib:0.55.0
+        image:  {{ $.Values.image.registry }}:{{ $.Values.image.tag }}
         resources:
           limits:
             cpu: 1
@@ -55,7 +57,7 @@ spec:
       initContainers:
       - name: consul-template-init
         image:  "{{ $.Values.global.docker.registry }}/{{ $.Values.global.consulTemplate.image.name }}:{{ $.Values.global.consulTemplate.image.tag }}"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ $.Values.image.pullPolicy }}
         args:
         - -once
         - -template=/etc/templates/{{ $.Chart.Name }}-config.yaml:/etc/datadog/{{ $.Chart.Name }}-config.yaml

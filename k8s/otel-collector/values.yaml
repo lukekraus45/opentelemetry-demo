@@ -4,8 +4,8 @@
 
 team: team-opentelemetry
 image:
-  repository: nginx
+  registry: registry.ddbuild.io/otel-demo/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "f89ffbd22"
 

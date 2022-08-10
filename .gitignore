@@ -25,5 +25,5 @@ node_modules/
 bazel-bin
 bazel-out
 bazel-testlogs
-bazel-opentelemetry-demo-webstore
+bazel-opentelemetry-demo
 src/shippingservice/target/
