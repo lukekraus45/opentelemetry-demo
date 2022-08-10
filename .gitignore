@@ -27,3 +27,11 @@ bazel-out
 bazel-testlogs
 bazel-opentelemetry-demo
 src/shippingservice/target/
+src/shippingservice/target/
+
+coverage
+.next/
+out/
+build
+src/frontend/protos
+next-env.d.ts

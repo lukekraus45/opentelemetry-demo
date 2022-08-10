@@ -41,3 +41,27 @@ significant modifications will be credited to OpenTelemetry Authors.
 ([#189](https://github.com/open-telemetry/opentelemetry-demo/pull/189))
 * Simplified repo name and dropped the '-webstore' suffix in every place
 ([#225](https://github.com/open-telemetry/opentelemetry-demo/pull/225))
+* Added end-to-end tests to each individual service
+([#242](https://github.com/open-telemetry/opentelemetry-demo/pull/242))
+* Added ability for repo forks to specify additional collector settings
+([#246](https://github.com/open-telemetry/opentelemetry-demo/pull/246))
+* Add metrics endpoint in adservice to send metrics from java agent
+([#237](https://github.com/open-telemetry/opentelemetry-demo/pull/237))
+* Support override java agent jar
+([#244](https://github.com/open-telemetry/opentelemetry-demo/pull/244))
+* Pulling java agent from the Java instrumentation releases instead.
+([#253](https://github.com/open-telemetry/opentelemetry-demo/pull/253))
+* Added explicit support for Kubernetes.
+([#255](https://github.com/open-telemetry/opentelemetry-demo/pull/255))
+* Added spanmetrics processor to otelcol
+([#212](https://github.com/open-telemetry/opentelemetry-demo/pull/212))
+* Added span attributes to shipping service
+([#260](https://github.com/open-telemetry/opentelemetry-demo/pull/260))
+* Added span attributes to currency service
+([#265](https://github.com/open-telemetry/opentelemetry-demo/pull/265))
+* Restricted network and port bindings
+([#272](https://github.com/open-telemetry/opentelemetry-demo/pull/272))
+* Feature Flag Service UI exposed on port 8081
+([#273](https://github.com/open-telemetry/opentelemetry-demo/pull/273))
+* Reimplemented Frontend app using [Next.js](https://nextjs.org/) Browser client
+([#236](https://github.com/open-telemetry/opentelemetry-demo/pull/236))
