@@ -28,7 +28,7 @@ bazel-testlogs
 bazel-opentelemetry-demo
 src/shippingservice/target/
 src/shippingservice/target/
-
+.venv
 coverage
 .next/
 out/

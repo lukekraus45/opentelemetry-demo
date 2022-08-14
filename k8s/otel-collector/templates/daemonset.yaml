@@ -30,6 +30,7 @@ spec:
         command:
           - "/otelcol-contrib"
           - "--config=/etc/datadog/{{ $.Chart.Name }}-config.yaml"
+          - "--config=/etc/processor/{{ $.Chart.Name }}-config-processor.yaml"
         image:  {{ $.Values.image.registry }}:{{ $.Values.image.tag }}
         resources:
           limits:
@@ -54,6 +55,8 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /etc/datadog
+        - name: {{ $.Chart.Name }}-config-processor
+          mountPath: /etc/processor
       initContainers:
       - name: consul-template-init
         image:  "{{ $.Values.global.docker.registry }}/{{ $.Values.global.consulTemplate.image.name }}:{{ $.Values.global.consulTemplate.image.tag }}"
@@ -84,3 +87,9 @@ spec:
         - name: {{ $.Chart.Name }}-config-templates
           configMap:
             name: {{ $.Chart.Name }}-config-templates
+        - name: {{ $.Chart.Name }}-config-templates
+          configMap:
+            name: {{ $.Chart.Name }}-config-templates
+        - name: {{ $.Chart.Name }}-config-processor
+          configMap:
+            name: {{ $.Chart.Name }}-config-processor

@@ -70,7 +70,7 @@ dd_image:
 	docker build -f src/adservice/Dockerfile -t otel-demo/adservice . 
 	docker build -f src/cartservice/src/Dockerfile -t otel-demo/cartservice . 
 	docker build -f src/checkoutservice/Dockerfile -t otel-demo/checkoutservice .
-	docker build -f src/currencyservice/Dockerfile -t otel-demo/currencyservice ./src/currencyservice
+	docker build -f src/currencyservice/Dockerfile -t otel-demo/currencyservice ./src/currencyservice --build-arg OPENTELEMETRY_VERSION=1.4.0 --build-arg GRPC_VERSION=1.46.0
 	docker build -f src/emailservice/Dockerfile -t otel-demo/emailservice ./src/emailservice
 	docker build -f src/frontend/Dockerfile -t otel-demo/frontend .
 	docker build -f src/paymentservice/Dockerfile -t otel-demo/paymentservice .

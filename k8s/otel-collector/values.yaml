@@ -7,5 +7,5 @@ image:
   registry: registry.ddbuild.io/otel-demo/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "f89ffbd22"
+  tag: "v0.57.2-56-gf42100ae0"
 

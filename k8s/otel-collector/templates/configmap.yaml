@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ $.Chart.Name }}-config-templates
   labels:
-    app: {{ $.Chart.Name }} 
+    app: {{ $.Chart.Name }}
     component: {{ $.Chart.Name }}-config-templates
 data:
   {{ $.Chart.Name }}-config.yaml: |
@@ -25,13 +25,21 @@ data:
         scrapers:
           cpu:
             metrics:
-                system.cpu.utilization:
-                  enabled: true
+              system.cpu.utilization:
+                enabled: true
           disk:
           filesystem:
           load:
           memory:
+            metrics:
+              system.memory.utilization:
+                enabled: true
           network:
+            metrics:
+              system.network.io.receive:
+                enabled: true
+              system.network.io.transmit:
+                enabled: true
           processes:
       otlp:
         protocols:
@@ -42,7 +50,7 @@ data:
     exporters:
       otlp:
         endpoint: "${HOST_IP}:4317"
-        tls: 
+        tls:
           insecure: true
       datadog:
         api:
@@ -50,7 +58,7 @@ data:
           site: datadoghq.com
     processors:
       resourcedetection:
-        # ensures host.name and other important resource tags 
+        # ensures host.name and other important resource tags
         # get picked up
         detectors: [system, env]
         timeout: 5s
@@ -61,14 +69,115 @@ data:
         send_batch_max_size: 1000
         send_batch_size: 100
         timeout: 10s
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Chart.Name }}-config-processor
+  labels:
+    app: {{ $.Chart.Name }}
+    component: {{ $.Chart.Name }}-config-processor
+data:
+  {{ $.Chart.Name }}-config-processor.yaml: |
+    processors:
+      metricstransform:
+        transforms:
+          - include: system.cpu.load_average.1m
+            match_type: strict
+            action: insert
+            new_name: system.load.1
+            operations:
+              action: add_label
+              new_label: dd_dupe_metric
+              new_value: true
+          - include: system.cpu.load_average.5m
+            match_type: strict
+            action: insert
+            new_name: system.load.5
+            operations:
+              action: add_label
+              new_label: dd_dupe_metric
+              new_value: true
+          - include: system.cpu.load_average.15m
+            match_type: strict
+            action: insert
+            new_name: system.load.15
+            operations:
+              action: add_label
+              new_label: dd_dupe_metric
+              new_value: true
+          - include: system.cpu.utilization
+            experimental_match_labels: {"state": "idle"}
+            match_type: strict
+            action: insert
+            new_name: system.cpu.idle
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
+              - action: experimental_scale_value
+                experimental_scale: 100
+          - include: system.cpu.utilization
+            experimental_match_labels: {"state": "user"}
+            match_type: strict
+            action: insert
+            new_name: system.cpu.user
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
+              - action: experimental_scale_value
+                experimental_scale: 100
+          - include: system.cpu.utilization
+            experimental_match_labels: {"state": "wait"}
+            match_type: strict
+            action: insert
+            new_name: system.cpu.iowait
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
+              - action: experimental_scale_value
+                experimental_scale: 100
+          - include: system.cpu.utilization
+            experimental_match_labels: {"state": "steal"}
+            match_type: strict
+            action: insert
+            new_name: system.cpu.stolen
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
+              - action: experimental_scale_value
+                experimental_scale: 100
+          - include: system.memory.usage
+            match_type: strict
+            action: insert
+            new_name: system.memory.total
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
+          - include: system.memory.usage
+            experimental_match_labels: {"state": "free"}
+            match_type: strict
+            action: insert
+            new_name: system.memory.usable
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
     service:
       pipelines:
         metrics:
           receivers: [otlp,k8s_cluster,hostmetrics, prometheus]
-          processors: [batch,k8sattributes, resourcedetection]
+          processors: [ resourcedetection, k8sattributes, metricstransform, batch]
           exporters: [datadog,otlp]
 
         traces:
           receivers: [otlp]
           processors: [resourcedetection, k8sattributes, batch]
           exporters: [datadog,otlp]
+
+---
