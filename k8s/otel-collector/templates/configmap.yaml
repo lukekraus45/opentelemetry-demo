@@ -22,13 +22,23 @@ data:
       k8s_cluster:
         collection_interval: 10s
       hostmetrics:
+        collection_interval: 10s
         scrapers:
+          paging:
+            metrics:
+              system.paging.utilization:
+                enabled: true
+              system.paging.usage:
+                enabled: true
           cpu:
             metrics:
               system.cpu.utilization:
                 enabled: true
           disk:
           filesystem:
+            metrics:
+              system.filesystem.utilization:
+                enabled: true
           load:
           memory:
             metrics:
@@ -154,20 +164,82 @@ data:
           - include: system.memory.usage
             match_type: strict
             action: insert
-            new_name: system.memory.total
+            new_name: system.mem.total
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
+              - action: experimental_scale_value
+                experimental_scale: 0.000001
+          - include: system.memory.usage
+            experimental_match_labels: {"state": "free"}
+            match_type: strict
+            action: insert
+            new_name: system.mem.usable
             operations:
               - action: add_label
                 new_label: dd_dupe_metric
                 new_value: true
           - include: system.memory.usage
-            experimental_match_labels: {"state": "free"}
+            experimental_match_labels: {"state": "cached"}
             match_type: strict
             action: insert
-            new_name: system.memory.usable
+            new_name: system.mem.usable
             operations:
               - action: add_label
                 new_label: dd_dupe_metric
                 new_value: true
+          - include: system.memory.usage
+            experimental_match_labels: {"state": "buffered"}
+            match_type: strict
+            action: insert
+            new_name: system.mem.usable
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
+          - include: system.mem.usable
+            match_type: strict
+            action: update
+            operations:
+              - action: aggregate_label_values
+                label: state
+                aggregated_values: [ "free", "cached", "buffered" ]
+                new_value: usable
+                aggregation_type: sum
+              - action: experimental_scale_value
+                experimental_scale: 0.000001
+          - include: system.network.io
+            experimental_match_labels: {"direction": "receive"}
+            match_type: strict
+            action: insert
+            new_name: system.net.bytes_rcvd
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
+              - action: experimental_scale_value
+                experimental_scale: 0.001
+          - include: system.network.io
+            experimental_match_labels: {"direction": "transmit"}
+            match_type: strict
+            action: insert
+            new_name: system.net.bytes_sent
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
+              - action: experimental_scale_value
+                experimental_scale: 0.001
+          - include: system.filesystem.utilization
+            match_type: strict
+            action: insert
+            new_name: system.disk.in_use
+            operations:
+              - action: add_label
+                new_label: dd_dupe_metric
+                new_value: true
+
     service:
       pipelines:
         metrics:
