@@ -34,12 +34,13 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
-import io.opentelemetry.extension.annotations.SpanAttribute;
-import io.opentelemetry.extension.annotations.WithSpan;
+import io.opentelemetry.instrumentation.annotations.SpanAttribute;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +59,10 @@ public final class AdService {
   private static final AdService service = new AdService();
 
   private void start() throws IOException {
-    int port = Integer.parseInt(System.getenv("AD_SERVICE_PORT"));
+    int port = Integer.parseInt(Optional.ofNullable(System.getenv("AD_SERVICE_PORT")).orElseThrow(
+        () -> new IOException(
+            "environment vars: AD_SERVICE_PORT must not be null")
+    ));
     healthMgr = new HealthStatusManager();
 
     server =
@@ -126,7 +130,8 @@ public final class AdService {
         responseObserver.onNext(reply);
         responseObserver.onCompleted();
       } catch (StatusRuntimeException e) {
-        span.addEvent("Error", Attributes.of(AttributeKey.stringKey("exception.message"), e.getMessage()));
+        span.addEvent(
+            "Error", Attributes.of(AttributeKey.stringKey("exception.message"), e.getMessage()));
         span.setStatus(StatusCode.ERROR);
         logger.log(Level.WARN, "GetAds Failed with status {}", e.getStatus());
         responseObserver.onError(e);
@@ -204,7 +209,8 @@ public final class AdService {
     Ad travelTelescope =
         Ad.newBuilder()
             .setRedirectUrl("/product/1YMWWN1N4O")
-            .setText("Eclipsmart Travel Refractor Telescope for sale. Buy one, get second kit for free")
+            .setText(
+                "Eclipsmart Travel Refractor Telescope for sale. Buy one, get second kit for free")
             .build();
     Ad solarFilter =
         Ad.newBuilder()

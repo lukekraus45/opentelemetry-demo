@@ -1,5 +1,7 @@
 extends: default
 
+ignore-from-file: .gitignore
+
 rules:
   document-start: disable
   octal-values: enable
@@ -11,5 +13,8 @@ rules:
     check-multi-line-strings: false
     indent-sequences: consistent
   brackets:
+    max-spaces-inside: 1
+    max-spaces-inside-empty: 0
+  braces:
     max-spaces-inside: 1
     max-spaces-inside-empty: 0

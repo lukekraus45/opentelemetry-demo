@@ -8,19 +8,19 @@ interface IProps {
   price: Money;
 }
 
-const ProductPrice = ({ price: { units, currencyCode, nanos }, price }: IProps) => {
+const ProductPrice = ({ price: { units, currencyCode, nanos } }: IProps) => {
   const { selectedCurrency } = useCurrency();
-
-  console.log('@@@price', price);
 
   const currencySymbol = useMemo(
     () => getSymbolFromCurrency(currencyCode) || selectedCurrency,
     [currencyCode, selectedCurrency]
   );
 
+  const total = units + nanos / 1000000000;
+
   return (
     <span data-cy={CypressFields.ProductPrice}>
-      {currencySymbol} {units}.{nanos.toString().slice(0, 2)}
+      {currencySymbol} {total.toFixed(2)}
     </span>
   );
 };

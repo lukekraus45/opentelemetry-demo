@@ -4,9 +4,9 @@ The frontend is responsible to provide a UI for users, as well
 as an API leveraged by the UI or other clients. The application is based on
 [Next.JS](https://nextjs.org/) to provide a React web-based UI and API routes.
 
-[Front End source](../../src/frontend/)
+[Frontend source](../../src/frontend/)
 
-## SDK initialization
+## Server Instrumentation
 
 It is recommended to use a Node required module when starting your NodeJS
 application to initialize the SDK and auto-instrumentation. When initializing
@@ -20,11 +20,27 @@ for OTLP export, resource attributes, and service name.
 ```javascript
 const opentelemetry = require("@opentelemetry/sdk-node")
 const { getNodeAutoInstrumentations } = require("@opentelemetry/auto-instrumentations-node")
-const { OTLPTraceExporter } =  require('@opentelemetry/exporter-trace-otlp-grpc')
+const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-grpc')
+const { alibabaCloudEcsDetector } = require('@opentelemetry/resource-detector-alibaba-cloud')
+const { awsEc2Detector, awsEksDetector } = require('@opentelemetry/resource-detector-aws')
+const { containerDetector } = require('@opentelemetry/resource-detector-container')
+const { gcpDetector } = require('@opentelemetry/resource-detector-gcp')
+const { envDetector, hostDetector, osDetector, processDetector } = require('@opentelemetry/resources')
 
 const sdk = new opentelemetry.NodeSDK({
   traceExporter: new OTLPTraceExporter(),
-  instrumentations: [ getNodeAutoInstrumentations() ]
+  instrumentations: [ getNodeAutoInstrumentations() ],
+  resourceDetectors: [
+    containerDetector,
+    envDetector,
+    hostDetector,
+    osDetector,
+    processDetector,
+    alibabaCloudEcsDetector,
+    awsEksDetector,
+    awsEc2Detector,
+    gcpDetector
+  ]
 })
 
 sdk.start()
@@ -75,7 +91,6 @@ application context.
             "app.synthetic_request": true,
             [SemanticAttributes.HTTP_TARGET]: target,
             [SemanticAttributes.HTTP_STATUS_CODE]: response.statusCode,
-            [SemanticAttributes.HTTP_ROUTE]: url,
             [SemanticAttributes.HTTP_METHOD]: method,
             [SemanticAttributes.HTTP_USER_AGENT]: headers['user-agent'] || '',
             [SemanticAttributes.HTTP_URL]: `${headers.host}${url}`,
@@ -102,6 +117,11 @@ TracerProvider, establish an OTLP export, register trace context propagators,
 and register web specific auto-instrumentation libraries. Since the browser
 will send data to an OpenTelemetry collector that will likely be on a separate
 domain, CORS headers are also setup accordingly.
+
+As part of the changes to carry over the `synthetic_request` attribute flag for
+the backend services, the `applyCustomAttributesOnSpan` configuration function
+has been added to the `instrumentation-fetch` library custom span attributes logic
+that way every browser-side span will include it.
 
 ```typescript
 import { CompositePropagator, W3CBaggagePropagator, W3CTraceContextPropagator } from '@opentelemetry/core';
@@ -140,6 +160,9 @@ const FrontendTracer = async () => {
         '@opentelemetry/instrumentation-fetch': {
           propagateTraceHeaderCorsUrls: /.*/,
           clearTimingResources: true,
+          applyCustomAttributesOnSpan(span) {
+             span.setAttribute('app.synthetic_request', 'false');
+          },
         },
       }),
     ],
