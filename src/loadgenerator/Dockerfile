@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM python:3.11-slim-buster as base
+FROM registry.ddbuild.io/images/mirror/python:3.9.13 AS base
 
 FROM base as builder
 RUN apt-get -qq update \
