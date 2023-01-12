@@ -49,12 +49,26 @@ import (
 )
 
 var (
-	log     *logrus.Logger
+	log     *logrus.Entry
 	catalog []*pb.Product
 )
 
 func init() {
-	log = logrus.New()
+	logger := logrus.New()
+	logger.Level = logrus.DebugLevel
+	logger.Formatter = &logrus.JSONFormatter{
+		FieldMap: logrus.FieldMap{
+			logrus.FieldKeyTime:  "timestamp",
+			logrus.FieldKeyLevel: "severity",
+			logrus.FieldKeyMsg:   "message",
+		},
+		TimestampFormat: time.RFC3339Nano,
+	}
+	logger.Out = os.Stdout
+
+	log = logger.WithFields(logrus.Fields{
+		"service": "productcatalogservice",
+	})
 	catalog = readCatalogFile()
 }
 
@@ -201,6 +215,12 @@ func (p *productCatalog) GetProduct(ctx context.Context, req *pb.GetProductReque
 
 	msg := fmt.Sprintf("Product Found - ID: %s, Name: %s", req.Id, found.Name)
 	span.AddEvent(msg)
+	log.WithFields(
+		logrus.Fields{
+			"trace_id": span.SpanContext().TraceID().String(),
+			"span_id":  span.SpanContext().SpanID().String(),
+		},
+	).Info(msg)
 	span.SetAttributes(
 		attribute.String("app.product.name", found.Name),
 	)

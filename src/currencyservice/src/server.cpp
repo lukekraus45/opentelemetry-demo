@@ -12,87 +12,59 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <iostream>
-#include <math.h>
 #include <demo.grpc.pb.h>
 #include <grpc/health/v1/health.grpc.pb.h>
+#include <iostream>
+#include <math.h>
 
+#include "opentelemetry/baggage/baggage.h"
+#include "opentelemetry/nostd/string_view.h"
 #include "opentelemetry/trace/context.h"
 #include "opentelemetry/trace/semantic_conventions.h"
 #include "opentelemetry/trace/span_context_kv_iterable_view.h"
-#include "opentelemetry/baggage/baggage.h"
-#include "opentelemetry/nostd/string_view.h"
 #include "tracer_common.h"
 
 #include <grpcpp/grpcpp.h>
+#include <grpcpp/impl/codegen/string_ref.h>
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
 #include <grpcpp/server_context.h>
-#include <grpcpp/impl/codegen/string_ref.h>
 
 using namespace std;
 
+using hipstershop::CurrencyConversionRequest;
 using hipstershop::Empty;
 using hipstershop::GetSupportedCurrenciesResponse;
-using hipstershop::CurrencyConversionRequest;
 using hipstershop::Money;
 
-using grpc::Status;
-using grpc::ServerContext;
-using grpc::ServerBuilder;
 using grpc::Server;
+using grpc::ServerBuilder;
+using grpc::ServerContext;
+using grpc::Status;
 
-using Span        = opentelemetry::trace::Span;
+using Span = opentelemetry::trace::Span;
 using SpanContext = opentelemetry::trace::SpanContext;
 using namespace opentelemetry::trace;
 using namespace opentelemetry::baggage;
 namespace context = opentelemetry::context;
 
-namespace
-{
-  std::unordered_map<std::string, double> currency_conversion{
-    {"EUR", 1.0},
-    {"USD", 1.1305},
-    {"JPY", 126.40},
-    {"BGN", 1.9558},
-    {"CZK", 25.592},
-    {"DKK", 7.4609},
-    {"GBP", 0.85970},
-    {"HUF", 315.51},
-    {"PLN", 4.2996},
-    {"RON", 4.7463},
-    {"SEK", 10.5375},
-    {"CHF", 1.1360},
-    {"ISK", 136.80},
-    {"NOK", 9.8040},
-    {"HRK", 7.4210},
-    {"RUB", 74.4208},
-    {"TRY", 6.1247},
-    {"AUD", 1.6072},
-    {"BRL", 4.2682},
-    {"CAD", 1.5128},
-    {"CNY", 7.5857},
-    {"HKD", 8.8743},
-    {"IDR", 15999.40},
-    {"ILS", 4.0875},
-    {"INR", 79.4320},
-    {"KRW", 1275.05},
-    {"MXN", 21.7999},
-    {"MYR", 4.6289},
-    {"NZD", 1.6679},
-    {"PHP", 59.083},
-    {"SGD", 1.5349},
-    {"THB", 36.012},
+namespace {
+std::unordered_map<std::string, double> currency_conversion{
+    {"EUR", 1.0},     {"USD", 1.1305},  {"JPY", 126.40},   {"BGN", 1.9558},
+    {"CZK", 25.592},  {"DKK", 7.4609},  {"GBP", 0.85970},  {"HUF", 315.51},
+    {"PLN", 4.2996},  {"RON", 4.7463},  {"SEK", 10.5375},  {"CHF", 1.1360},
+    {"ISK", 136.80},  {"NOK", 9.8040},  {"HRK", 7.4210},   {"RUB", 74.4208},
+    {"TRY", 6.1247},  {"AUD", 1.6072},  {"BRL", 4.2682},   {"CAD", 1.5128},
+    {"CNY", 7.5857},  {"HKD", 8.8743},  {"IDR", 15999.40}, {"ILS", 4.0875},
+    {"INR", 79.4320}, {"KRW", 1275.05}, {"MXN", 21.7999},  {"MYR", 4.6289},
+    {"NZD", 1.6679},  {"PHP", 59.083},  {"SGD", 1.5349},   {"THB", 36.012},
     {"ZAR", 16.0583},
 };
 
-class HealthServer final : public grpc::health::v1::Health::Service
-{
-  Status Check(
-    ServerContext* context,
-    const grpc::health::v1::HealthCheckRequest* request,
-    grpc::health::v1::HealthCheckResponse* response) override
-  {
+class HealthServer final : public grpc::health::v1::Health::Service {
+  Status Check(ServerContext *context,
+               const grpc::health::v1::HealthCheckRequest *request,
+               grpc::health::v1::HealthCheckResponse *response) override {
     response->set_status(grpc::health::v1::HealthCheckResponse::SERVING);
     return Status::OK;
   }
@@ -108,19 +80,22 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
     options.kind = SpanKind::kServer;
     GrpcServerCarrier carrier(context);
 
-    auto prop        = context::propagation::GlobalTextMapPropagator::GetGlobalPropagator();
+    auto prop =
+        context::propagation::GlobalTextMapPropagator::GetGlobalPropagator();
     auto current_ctx = context::RuntimeContext::GetCurrent();
     auto new_context = prop->Extract(carrier, current_ctx);
-    options.parent   = GetSpan(new_context)->GetContext();
+    options.parent = GetSpan(new_context)->GetContext();
 
     std::string span_name = "CurrencyService/GetSupportedCurrencies";
     auto span =
-        get_tracer("currencyservice")->StartSpan(span_name,
-                                      {{SemanticConventions::RPC_SYSTEM, "grpc"},
-                                       {SemanticConventions::RPC_SERVICE, "CurrencyService"},
-                                       {SemanticConventions::RPC_METHOD, "GetSupportedCurrencies"},
-                                       {SemanticConventions::RPC_GRPC_STATUS_CODE, 0}},
-                                      options);
+        get_tracer("currencyservice")
+            ->StartSpan(
+                span_name,
+                {{SemanticConventions::RPC_SYSTEM, "grpc"},
+                 {SemanticConventions::RPC_SERVICE, "CurrencyService"},
+                 {SemanticConventions::RPC_METHOD, "GetSupportedCurrencies"},
+                 {SemanticConventions::RPC_GRPC_STATUS_CODE, 0}},
+                options);
     auto scope = get_tracer("currencyservice")->WithActiveSpan(span);
 
     span->AddEvent("Processing supported currencies request");
@@ -135,24 +110,29 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
     span->End();
 
     std::cout << __func__ << " successful" << std::endl;
-  	return Status::OK;
+    return Status::OK;
   }
 
-  double getDouble(Money& money) {
+  std::string Hex(const opentelemetry::trace::TraceId &trace) {
+    char buf[32];
+    trace.ToLowerBase16(buf);
+    return std::string(buf, sizeof(buf));
+  }
+  double getDouble(Money &money) {
     auto units = money.units();
     auto nanos = money.nanos();
 
     double decimal = 0.0;
     while (nanos != 0) {
-      double t = (double)(nanos%10)/10;
-      nanos = nanos/10;
-      decimal = decimal/10 + t;
+      double t = (double)(nanos % 10) / 10;
+      nanos = nanos / 10;
+      decimal = decimal / 10 + t;
     }
 
     return double(units) + decimal;
   }
 
-  void getUnitsAndNanos(Money& money, double value) {
+  void getUnitsAndNanos(Money &money, double value) {
     long unit = (long)value;
     double rem = value - unit;
     long nano = rem * pow(10, 9);
@@ -168,19 +148,21 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
     options.kind = SpanKind::kServer;
     GrpcServerCarrier carrier(context);
 
-    auto prop        = context::propagation::GlobalTextMapPropagator::GetGlobalPropagator();
+    auto prop =
+        context::propagation::GlobalTextMapPropagator::GetGlobalPropagator();
     auto current_ctx = context::RuntimeContext::GetCurrent();
     auto new_context = prop->Extract(carrier, current_ctx);
-    options.parent   = GetSpan(new_context)->GetContext();
+    options.parent = GetSpan(new_context)->GetContext();
 
     std::string span_name = "CurrencyService/Convert";
     auto span =
-        get_tracer("currencyservice")->StartSpan(span_name,
-                                      {{SemanticConventions::RPC_SYSTEM, "grpc"},
-                                       {SemanticConventions::RPC_SERVICE, "CurrencyService"},
-                                       {SemanticConventions::RPC_METHOD, "Convert"},
-                                       {SemanticConventions::RPC_GRPC_STATUS_CODE, 0}},
-                                      options);
+        get_tracer("currencyservice")
+            ->StartSpan(span_name,
+                        {{SemanticConventions::RPC_SYSTEM, "grpc"},
+                         {SemanticConventions::RPC_SERVICE, "CurrencyService"},
+                         {SemanticConventions::RPC_METHOD, "Convert"},
+                         {SemanticConventions::RPC_GRPC_STATUS_CODE, 0}},
+                        options);
     auto scope = get_tracer("currencyservice")->WithActiveSpan(span);
 
     span->AddEvent("Processing currency conversion request");
@@ -190,7 +172,7 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
       Money from = request->from();
       string from_code = from.currency_code();
       double rate = currency_conversion[from_code];
-      double one_euro = getDouble(from) / rate ;
+      double one_euro = getDouble(from) / rate;
 
       string to_code = request->to_code();
       double to_rate = currency_conversion[to_code];
@@ -205,11 +187,12 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
       // End the span
       span->AddEvent("Conversion successful, response sent back");
       span->SetStatus(StatusCode::kOk);
-      std::cout << __func__ << " conversion successful" << std::endl;
+      std::cout << __func__ << " conversion successful trace_id="
+                << Hex(span->GetContext().trace_id()) << std::endl;
       span->End();
       return Status::OK;
 
-    } catch(...) {
+    } catch (...) {
       span->AddEvent("Conversion failed");
       span->SetStatus(StatusCode::kError);
       std::cout << __func__ << " conversion failure" << std::endl;
@@ -220,8 +203,7 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
   }
 };
 
-void RunServer(uint16_t port)
-{
+void RunServer(uint16_t port) {
   std::string address("0.0.0.0:" + std::to_string(port));
   CurrencyService currencyService;
   HealthServer healthService;
@@ -236,7 +218,7 @@ void RunServer(uint16_t port)
   server->Wait();
   server->Shutdown();
 }
-}
+} // namespace
 
 int main(int argc, char **argv) {
 

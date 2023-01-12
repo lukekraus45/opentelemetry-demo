@@ -11,7 +11,7 @@ var (
 	ProtocolVersion = sarama.V3_0_0_0
 )
 
-func CreateKafkaProducer(brokers []string, log *logrus.Logger) (sarama.AsyncProducer, error) {
+func CreateKafkaProducer(brokers []string, log *logrus.Entry) (sarama.AsyncProducer, error) {
 	saramaConfig := sarama.NewConfig()
 	saramaConfig.Version = ProtocolVersion
 	// So we can know the partition and offset of messages.

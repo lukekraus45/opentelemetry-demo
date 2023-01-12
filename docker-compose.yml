@@ -302,6 +302,8 @@ services:
       - OTEL_SERVICE_NAME=frontend
       - PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
       - WEB_OTEL_SERVICE_NAME=frontend-web
+      - DD_RUM_APPLICATION_ID=cbb44855-639e-4670-8f85-6fcc2708d71b
+      - DD_RUM_CLIENT_TOKEN=pubc740d845513f67fbf3c1c83235731e58
     depends_on:
       - adservice
       - cartservice

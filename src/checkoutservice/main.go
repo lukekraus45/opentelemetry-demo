@@ -56,15 +56,19 @@ import (
 	"github.com/open-telemetry/opentelemetry-demo/src/checkoutservice/money"
 )
 
-var log *logrus.Logger
+const (
+	usdCurrency = "USD"
+)
+
+var log *logrus.Entry
 var tracer trace.Tracer
 var resource *sdkresource.Resource
 var initResourcesOnce sync.Once
 
 func init() {
-	log = logrus.New()
-	log.Level = logrus.DebugLevel
-	log.Formatter = &logrus.JSONFormatter{
+	logger := logrus.New()
+	logger.Level = logrus.DebugLevel
+	logger.Formatter = &logrus.JSONFormatter{
 		FieldMap: logrus.FieldMap{
 			logrus.FieldKeyTime:  "timestamp",
 			logrus.FieldKeyLevel: "severity",
@@ -72,7 +76,11 @@ func init() {
 		},
 		TimestampFormat: time.RFC3339Nano,
 	}
-	log.Out = os.Stdout
+	logger.Out = os.Stdout
+
+	log = logger.WithFields(logrus.Fields{
+		"service": "checkoutservice",
+	})
 }
 
 func initResource() *sdkresource.Resource {
@@ -215,12 +223,19 @@ func (cs *checkoutService) PlaceOrder(ctx context.Context, req *pb.PlaceOrderReq
 		attribute.String("app.user.id", req.UserId),
 		attribute.String("app.user.currency", req.UserCurrency),
 	)
-	log.Infof("[PlaceOrder] user_id=%q user_currency=%q", req.UserId, req.UserCurrency)
+	logger := log.WithFields(
+		logrus.Fields{
+			"trace_id": span.SpanContext().TraceID().String(),
+			"span_id":  span.SpanContext().SpanID().String(),
+		},
+	)
+	logger.Infof("[PlaceOrder] user_id=%q user_currency=%q", req.UserId, req.UserCurrency)
 
 	var err error
 	defer func() {
 		if err != nil {
 			span.AddEvent("error", trace.WithAttributes(attribute.String("exception.message", err.Error())))
+			logger.WithField("error", err).Error("request failed")
 		}
 	}()
 
@@ -248,9 +263,8 @@ func (cs *checkoutService) PlaceOrder(ctx context.Context, req *pb.PlaceOrderReq
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to charge card: %+v", err)
 	}
-	log.Infof("payment went through (transaction_id: %s)", txID)
-	span.AddEvent("charged",
-		trace.WithAttributes(attribute.String("app.payment.transaction.id", txID)))
+	logger.Infof("payment went through (transaction_id: %s)", txID)
+	span.AddEvent("charged", trace.WithAttributes(attribute.String("app.payment.transaction.id", txID)))
 
 	shippingTrackingID, err := cs.shipOrder(ctx, req.Address, prep.cartItems)
 	if err != nil {
@@ -281,9 +295,9 @@ func (cs *checkoutService) PlaceOrder(ctx context.Context, req *pb.PlaceOrderReq
 	)
 
 	if err := cs.sendOrderConfirmation(ctx, req.Email, orderResult); err != nil {
-		log.Warnf("failed to send order confirmation to %q: %+v", req.Email, err)
+		logger.Warnf("failed to send order confirmation to %q: %+v", req.Email, err)
 	} else {
-		log.Infof("order confirmation email sent to %q", req.Email)
+		logger.Infof("order confirmation email sent to %q", req.Email)
 	}
 
 	cs.sendToPostProcessor(ctx, orderResult)
