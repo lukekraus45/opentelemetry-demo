@@ -37,6 +37,7 @@ datadogRum.init({
     // version: '1.0.0',
     sampleRate: 100,
     sessionReplaySampleRate: 20,
+    allowedTracingUrls: [{ match: () => true, propagatorTypes: ['tracecontext']}],
     trackInteractions: true,
     trackResources: true,
     trackLongTasks: true,
