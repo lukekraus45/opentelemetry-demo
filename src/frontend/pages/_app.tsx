@@ -43,6 +43,8 @@ datadogRum.init({
     defaultPrivacyLevel:'mask-user-input'
 });
 
+datadogRum.startSessionReplayRecording();
+
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
