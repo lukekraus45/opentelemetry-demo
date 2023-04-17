@@ -1,10 +1,12 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
 # extra settings to be merged into OpenTelemetry Collector configuration
 # do not delete this file
 
 exporters:
   datadog:
     api:
-      key: DD_API_KEY   # Set/Replace with your Datadog API key
+      key: DD_API_KEY
     host_metadata:
       tags:
         - otel:true
@@ -19,8 +21,8 @@ processors:
 service:
   pipelines:
     traces:
-      processors: [spanmetrics, batch, resource]
-      exporters: [logging, jaeger, datadog]
+      processors: [ batch, resource]
+      exporters: [otlp,  datadog, spanmetrics]
     metrics:
       processors: [batch, resource]
       exporters: [prometheus, logging, datadog]

@@ -1,22 +1,12 @@
 // Copyright The OpenTelemetry Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// SPDX-License-Identifier: Apache-2.0
 
 #include <demo.grpc.pb.h>
 #include <grpc/health/v1/health.grpc.pb.h>
 #include <iostream>
 #include <math.h>
 
+#include "meter_common.h"
 #include "opentelemetry/baggage/baggage.h"
 #include "opentelemetry/nostd/string_view.h"
 #include "opentelemetry/trace/context.h"
@@ -32,10 +22,10 @@
 
 using namespace std;
 
-using hipstershop::CurrencyConversionRequest;
-using hipstershop::Empty;
-using hipstershop::GetSupportedCurrenciesResponse;
-using hipstershop::Money;
+using oteldemo::CurrencyConversionRequest;
+using oteldemo::Empty;
+using oteldemo::GetSupportedCurrenciesResponse;
+using oteldemo::Money;
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -47,6 +37,9 @@ using SpanContext = opentelemetry::trace::SpanContext;
 using namespace opentelemetry::trace;
 using namespace opentelemetry::baggage;
 namespace context = opentelemetry::context;
+
+namespace metrics_api = opentelemetry::metrics;
+namespace nostd = opentelemetry::nostd;
 
 namespace {
 std::unordered_map<std::string, double> currency_conversion{
@@ -61,6 +54,8 @@ std::unordered_map<std::string, double> currency_conversion{
     {"ZAR", 16.0583},
 };
 
+nostd::unique_ptr<metrics_api::Counter<uint64_t>> currency_counter;
+
 class HealthServer final : public grpc::health::v1::Health::Service {
   Status Check(ServerContext *context,
                const grpc::health::v1::HealthCheckRequest *request,
@@ -70,12 +65,10 @@ class HealthServer final : public grpc::health::v1::Health::Service {
   }
 };
 
-class CurrencyService final : public hipstershop::CurrencyService::Service
-{
-  Status GetSupportedCurrencies(ServerContext* context,
-  	const Empty* request,
-  	GetSupportedCurrenciesResponse* response) override
-  {
+class CurrencyService final : public oteldemo::CurrencyService::Service {
+  Status
+  GetSupportedCurrencies(ServerContext *context, const Empty *request,
+                         GetSupportedCurrenciesResponse *response) override {
     StartSpanOptions options;
     options.kind = SpanKind::kServer;
     GrpcServerCarrier carrier(context);
@@ -91,10 +84,10 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
         get_tracer("currencyservice")
             ->StartSpan(
                 span_name,
-                {{SemanticConventions::RPC_SYSTEM, "grpc"},
-                 {SemanticConventions::RPC_SERVICE, "CurrencyService"},
-                 {SemanticConventions::RPC_METHOD, "GetSupportedCurrencies"},
-                 {SemanticConventions::RPC_GRPC_STATUS_CODE, 0}},
+                {{SemanticConventions::kRpcSystem, "grpc"},
+                 {SemanticConventions::kRpcService, "CurrencyService"},
+                 {SemanticConventions::kRpcMethod, "GetSupportedCurrencies"},
+                 {SemanticConventions::kRpcGrpcStatusCode, 0}},
                 options);
     auto scope = get_tracer("currencyservice")->WithActiveSpan(span);
 
@@ -140,10 +133,9 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
     money.set_nanos(nano);
   }
 
-  Status Convert(ServerContext* context,
-  	const CurrencyConversionRequest* request,
-  	Money* response) override
-  {
+  Status Convert(ServerContext *context,
+                 const CurrencyConversionRequest *request,
+                 Money *response) override {
     StartSpanOptions options;
     options.kind = SpanKind::kServer;
     GrpcServerCarrier carrier(context);
@@ -158,10 +150,10 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
     auto span =
         get_tracer("currencyservice")
             ->StartSpan(span_name,
-                        {{SemanticConventions::RPC_SYSTEM, "grpc"},
-                         {SemanticConventions::RPC_SERVICE, "CurrencyService"},
-                         {SemanticConventions::RPC_METHOD, "Convert"},
-                         {SemanticConventions::RPC_GRPC_STATUS_CODE, 0}},
+                        {{SemanticConventions::kRpcSystem, "grpc"},
+                         {SemanticConventions::kRpcService, "CurrencyService"},
+                         {SemanticConventions::kRpcMethod, "Convert"},
+                         {SemanticConventions::kRpcGrpcStatusCode, 0}},
                         options);
     auto scope = get_tracer("currencyservice")->WithActiveSpan(span);
 
@@ -184,6 +176,8 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
       span->SetAttribute("app.currency.conversion.from", from_code);
       span->SetAttribute("app.currency.conversion.to", to_code);
 
+      CurrencyCounter(to_code);
+
       // End the span
       span->AddEvent("Conversion successful, response sent back");
       span->SetStatus(StatusCode::kOk);
@@ -200,6 +194,13 @@ class CurrencyService final : public hipstershop::CurrencyService::Service
       return Status::CANCELLED;
     }
     return Status::OK;
+  }
+
+  void CurrencyCounter(const std::string &currency_code) {
+    std::map<std::string, std::string> labels = {
+        {"currency_code", currency_code}};
+    auto labelkv = common::KeyValueIterableView<decltype(labels)>{labels};
+    currency_counter->Add(1, labelkv);
   }
 };
 
@@ -232,6 +233,8 @@ int main(int argc, char **argv) {
   std::cout << "Port: " << port << "\n";
 
   initTracer();
+  initMeter();
+  currency_counter = initIntCounter();
   RunServer(port);
 
   return 0;
