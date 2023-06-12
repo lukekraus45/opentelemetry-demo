@@ -131,3 +131,10 @@ build-ci-image-shippingservice:
     DOCKERFILE: src/shippingservice/Dockerfile
     IMAGE_TAG_SUFFIX: shippingservice
     CONTEXT: .
+
+build-ci-image-kafka:
+  <<: *build-ci-image
+  variables:
+    DOCKERFILE: src/kafka/Dockerfile
+    IMAGE_TAG_SUFFIX: kafka
+    CONTEXT: .
