@@ -8,7 +8,7 @@ FROM base as builder
 
 WORKDIR /tmp
 
-COPY Gemfile Gemfile.lock .
+COPY Gemfile Gemfile.lock ./
 
 RUN apk update && apk add make gcc musl-dev && bundle install
 

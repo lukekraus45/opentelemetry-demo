@@ -6,7 +6,7 @@ FROM registry.ddbuild.io/images/java:corretto-17 AS builder
 
 WORKDIR /usr/src/app/
 
-COPY ./src/adservice/gradlew* ./src/adservice/settings.gradle* ./src/adservice/build.gradle .
+COPY ./src/adservice/gradlew* ./src/adservice/settings.gradle* ./src/adservice/build.gradle ./
 COPY ./src/adservice/gradle ./gradle
 
 RUN ./gradlew

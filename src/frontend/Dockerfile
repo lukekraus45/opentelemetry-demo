@@ -10,7 +10,7 @@ WORKDIR /app
 COPY ./src/frontend/package*.json ./
 RUN npm ci
 
-FROM node:18-alpine AS builder
+FROM registry.ddbuild.io/images/mirror/node:18-alpine AS builder
 RUN apk add --no-cache libc6-compat protobuf-dev protoc
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
