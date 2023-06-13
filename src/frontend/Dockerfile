@@ -20,7 +20,7 @@ COPY ./src/frontend .
 RUN npm run grpc:generate
 RUN npm run build
 
-FROM node:18-alpine AS runner
+FROM registry.ddbuild.io/images/mirror/node:18-alpine AS runner
 WORKDIR /app
 RUN apk add --no-cache protobuf-dev protoc
 
