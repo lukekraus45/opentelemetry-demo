@@ -126,7 +126,13 @@ build-ci-image-recommendationservice:
     CONTEXT: .
 
 build-ci-image-shippingservice:
-  <<: *build-ci-image
+  stage: build
+  tags: ["runner:docker"]
+  image: $CI_IMAGE
+  script:
+    - TAG="v$CI_COMMIT_SHORT_SHA-$IMAGE_TAG_SUFFIX"
+    - docker buildx build --file $DOCKERFILE --tag registry.ddbuild.io/ci/opentelemetry-demo:$TAG --label target=staging $CONTEXT
+    - docker push registry.ddbuild.io/ci/opentelemetry-demo:$TAG
   variables:
     DOCKERFILE: src/shippingservice/Dockerfile
     IMAGE_TAG_SUFFIX: shippingservice
