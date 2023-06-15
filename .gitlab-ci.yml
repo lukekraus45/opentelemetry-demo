@@ -158,7 +158,7 @@ prod-deploy-demo-eks:
   tags: ["runner:docker", "size:large"]
   image: $CI_IMAGE
   dependencies:
-    - build-image-demo
+    - build
   script:
     # # For debugging
     #- aws sts get-caller-identity
