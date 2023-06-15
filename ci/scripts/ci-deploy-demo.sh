@@ -11,7 +11,7 @@ set -x
 
 install_demo() {
   # Set the namespace and release name
-  release_name="my-collector"
+  release_name="opentelemetry-demo"
 
   # if repo already exists, helm 3+ will skip
   helm --debug repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
@@ -19,7 +19,7 @@ install_demo() {
   # --install will run `helm install` if not already present.
   helm --debug upgrade "${release_name}" open-telemetry/opentelemetry-demo --install \
     -f ./ci/values.yaml \
-    --set-string image.tag="v$CI_COMMIT_SHORT_SHA"
+    --set-string default.image.tag="v$CI_COMMIT_SHORT_SHA"
 
 }
 
