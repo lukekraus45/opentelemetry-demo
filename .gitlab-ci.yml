@@ -9,7 +9,7 @@ variables:
 
 stages:
   - build
-  - prod-deploy-demo-eks
+  - prod-deploy
 
 # =======================================================================
 # Build and deploy the images used for CI
