@@ -18,7 +18,7 @@ RUN ./gradlew installDist -PprotoSourceDir=./proto
 
 # -----------------------------------------------------------------------------
 
-FROM eclipse-temurin:17-jre
+FROM registry.ddbuild.io/images/java:corretto-17
 
 ARG version=1.24.0
 WORKDIR /usr/src/app/

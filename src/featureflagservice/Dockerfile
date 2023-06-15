@@ -18,10 +18,10 @@
 #
 ARG ELIXIR_VERSION=1.14.5
 ARG OTP_VERSION=26.0
-ARG DEBIAN_VERSION=bullseye-slim
+ARG DEBIAN_VERSION=buster-20230227-slim
 
 ARG BUILDER_IMAGE="registry.ddbuild.io/images/mirror/hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
-ARG RUNNER_IMAGE="registry.ddbuild.io/images/mirror/debian:${DEBIAN_VERSION}"
+ARG RUNNER_IMAGE="registry.ddbuild.io/images/mirror/debian:bullseye-slim"
 
 FROM ${BUILDER_IMAGE} as builder
 
