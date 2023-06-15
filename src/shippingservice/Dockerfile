@@ -2,11 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-
 FROM --platform=${BUILDPLATFORM} registry.ddbuild.io/images/mirror/rust:1.69.0-bullseye as builder
 
-RUN apk update
-RUN apk add --no-cache ca-certificates git protobuf-dev protoc cmake clang clang-dev make gcc g++ libc-dev linux-headers
 ARG TARGETARCH TARGETPLATFORM BUILDPLATFORM
 
 RUN echo Building on ${BUILDPLATFORM} for ${TARGETPLATFORM}
