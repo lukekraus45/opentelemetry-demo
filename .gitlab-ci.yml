@@ -150,7 +150,7 @@ build-ci-image-kafka:
     IMAGE_TAG_SUFFIX: kafka
     CONTEXT: .
 
-prod-deploy: &prod-deploy
+.prod-deploy: &prod-deploy
   stage: prod-deploy
   tags: ["runner:docker", "size:large"]
   image: $CI_IMAGE
