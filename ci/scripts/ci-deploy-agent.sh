@@ -9,18 +9,17 @@ set -euo pipefail
 IFS=$'\n\t'
 set -x
 
-install_demo() {
+install_agent() {
   # Set the namespace and release name
-  release_name="opentelemetry-demo"
+  release_name="datadog-agent"
   namespace=$3
 
   # if repo already exists, helm 3+ will skip
-  helm --debug repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+  helm --debug repo add datadog https://helm.datadoghq.com
 
   # --install will run `helm install` if not already present.
-  helm --debug upgrade "${release_name}" -n "${namespace}" open-telemetry/opentelemetry-demo --install \
-    -f ./ci/values.yaml \
-    --set-string default.image.tag="v$CI_COMMIT_SHORT_SHA"
+  helm --debug upgrade "${release_name}" -n "${namespace}" datadog/datadog --install \
+    -f ./ci/datadog-agent-values.yaml --set datadog.apiKey=$DD_API_KEY
 
 }
 

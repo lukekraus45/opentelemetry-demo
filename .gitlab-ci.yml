@@ -150,7 +150,7 @@ build-ci-image-kafka:
     IMAGE_TAG_SUFFIX: kafka
     CONTEXT: .
 
-prod-deploy-otel-demo-eks:
+prod-deploy: &prod-deploy
   stage: prod-deploy
   tags: ["runner:docker", "size:large"]
   image: $CI_IMAGE
@@ -167,31 +167,38 @@ prod-deploy-otel-demo-eks:
       --name ci.opentelemetry-demo.eks_secret_access_key
       --with-decryption --query Parameter.Value
       --out text)
+    - >-
+      TEMP_DD_API_KEY=$(aws ssm get-parameter --region us-east-1
+      --name ci.opentelemetry-demo.eks_secret_access_key
+      --with-decryption --query Parameter.Value
+      --out text)
     - export AWS_ACCESS_KEY_ID=$TEMP_AWS_ACCESS_KEY_ID
     - export AWS_SECRET_ACCESS_KEY=$TEMP_AWS_SECRET_ACCESS_KEY
+    - export DD_API_KEY=TEMP_DD_API_KEY
     # # For debugging
     # - aws sts get-caller-identity
-    - bash ./ci/scripts/ci-deploy-demo.sh otel-demo arn:aws:eks:us-east-1:172597598159:cluster/otel-demo
+    - bash $SCRIPT $CLUSTER_NAME $CLUSTER_ARN $NAMESPACE
+
+prod-deploy-otel-demo-eks:
+  <<: *prod-deploy
+  variables:
+    - SCRIPT: ./ci/scripts/ci-deploy-demo.sh
+    - CLUSTER_NAME: otel-demo
+    - CLUSTER_ARN: arn:aws:eks:us-east-1:172597598159:cluster/otel-demo
+    - NAMESPACE: otel
 
 prod-deploy-otel-ingest-demo-eks:
-  stage: prod-deploy
-  tags: ["runner:docker", "size:large"]
-  image: $CI_IMAGE
-  script:
-    # # For debugging
-    #- aws sts get-caller-identity
-    - >-
-      TEMP_AWS_ACCESS_KEY_ID=$(aws ssm get-parameter --region us-east-1
-      --name ci.opentelemetry-demo.eks_access_key
-      --with-decryption --query Parameter.Value
-      --out text)
-    - >-
-      TEMP_AWS_SECRET_ACCESS_KEY=$(aws ssm get-parameter --region us-east-1
-      --name ci.opentelemetry-demo.eks_secret_access_key
-      --with-decryption --query Parameter.Value
-      --out text)
-    - export AWS_ACCESS_KEY_ID=$TEMP_AWS_ACCESS_KEY_ID
-    - export AWS_SECRET_ACCESS_KEY=$TEMP_AWS_SECRET_ACCESS_KEY
-    # # For debugging
-    # - aws sts get-caller-identity
-    - bash ./ci/scripts/ci-deploy-demo.sh otel-ingest-demo arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
+  <<: *prod-deploy
+  variables:
+    - SCRIPT: ./ci/scripts/ci-deploy-demo.sh
+    - CLUSTER_NAME: otel-ingest-demo
+    - CLUSTER_ARN: arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
+    - NAMESPACE: otel-ingest
+
+prod-deploy-otel-ingest-agent-eks:
+  <<: *prod-deploy
+  variables:
+    - SCRIPT: ./ci/scripts/ci-deploy-agent.sh
+    - CLUSTER_NAME: otel-ingest-demo
+    - CLUSTER_ARN: arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
+    - NAMESPACE: otel-ingest
