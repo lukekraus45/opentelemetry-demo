@@ -182,23 +182,23 @@ prod-deploy: &prod-deploy
 prod-deploy-otel-demo-eks:
   <<: *prod-deploy
   variables:
-    - SCRIPT: ./ci/scripts/ci-deploy-demo.sh
-    - CLUSTER_NAME: otel-demo
-    - CLUSTER_ARN: arn:aws:eks:us-east-1:172597598159:cluster/otel-demo
-    - NAMESPACE: otel
+    SCRIPT: ./ci/scripts/ci-deploy-demo.sh
+    CLUSTER_NAME: otel-demo
+    CLUSTER_ARN: arn:aws:eks:us-east-1:172597598159:cluster/otel-demo
+    NAMESPACE: otel
 
 prod-deploy-otel-ingest-demo-eks:
   <<: *prod-deploy
   variables:
-    - SCRIPT: ./ci/scripts/ci-deploy-demo.sh
-    - CLUSTER_NAME: otel-ingest-demo
-    - CLUSTER_ARN: arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
-    - NAMESPACE: otel-ingest
+    SCRIPT: ./ci/scripts/ci-deploy-demo.sh
+    CLUSTER_NAME: otel-ingest-demo
+    CLUSTER_ARN: arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
+    NAMESPACE: otel-ingest
 
 prod-deploy-otel-ingest-agent-eks:
   <<: *prod-deploy
   variables:
-    - SCRIPT: ./ci/scripts/ci-deploy-agent.sh
-    - CLUSTER_NAME: otel-ingest-demo
-    - CLUSTER_ARN: arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
-    - NAMESPACE: otel-ingest
+    SCRIPT: ./ci/scripts/ci-deploy-agent.sh
+    CLUSTER_NAME: otel-ingest-demo
+    CLUSTER_ARN: arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
+    NAMESPACE: otel-ingest
