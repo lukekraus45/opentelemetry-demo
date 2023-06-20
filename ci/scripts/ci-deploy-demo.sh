@@ -25,8 +25,8 @@ install_demo() {
 }
 
 ###########################################################################################################
-clusterName="otel-demo"
-clusterArn="arn:aws:eks:us-east-1:172597598159:cluster/${clusterName}"
+clusterName=$1
+clusterArn=$2
 
 aws eks --region us-east-1 update-kubeconfig --name "${clusterName}"
 kubectl config use-context "${clusterArn}"
