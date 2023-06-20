@@ -177,7 +177,7 @@ build-ci-image-kafka:
     - export DD_API_KEY=TEMP_DD_API_KEY
     # # For debugging
     # - aws sts get-caller-identity
-    - bash $SCRIPT $CLUSTER_NAME $CLUSTER_ARN $NAMESPACE
+    - bash $SCRIPT $CLUSTER_NAME $CLUSTER_ARN $REGION $NAMESPACE
 
 prod-deploy-otel-demo-eks:
   <<: *prod-deploy
@@ -185,6 +185,7 @@ prod-deploy-otel-demo-eks:
     SCRIPT: ./ci/scripts/ci-deploy-demo.sh
     CLUSTER_NAME: otel-demo
     CLUSTER_ARN: arn:aws:eks:us-east-1:172597598159:cluster/otel-demo
+    REGION: us-east-1
     NAMESPACE: otel
 
 prod-deploy-otel-ingest-demo-eks:
@@ -193,6 +194,7 @@ prod-deploy-otel-ingest-demo-eks:
     SCRIPT: ./ci/scripts/ci-deploy-demo.sh
     CLUSTER_NAME: otel-ingest-demo
     CLUSTER_ARN: arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
+    REGION: us-east-2
     NAMESPACE: otel-ingest
 
 prod-deploy-otel-ingest-agent-eks:
@@ -201,4 +203,5 @@ prod-deploy-otel-ingest-agent-eks:
     SCRIPT: ./ci/scripts/ci-deploy-agent.sh
     CLUSTER_NAME: otel-ingest-demo
     CLUSTER_ARN: arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
+    REGION: us-east-2
     NAMESPACE: otel-ingest

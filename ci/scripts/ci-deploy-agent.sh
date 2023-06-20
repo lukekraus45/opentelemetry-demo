@@ -11,7 +11,8 @@ set -x
 
 clusterName=$1
 clusterArn=$2
-namespace=$3
+region=$3
+namespace=$4
 install_agent() {
   # Set the namespace and release name
   release_name="datadog-agent"
@@ -27,7 +28,7 @@ install_agent() {
 
 ###########################################################################################################
 
-aws eks --region us-east-1 update-kubeconfig --name "${clusterName}"
+aws eks --region "${region}" update-kubeconfig --name "${clusterName}"
 kubectl config use-context "${clusterArn}"
 
 install_agent

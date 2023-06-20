@@ -11,7 +11,8 @@ set -x
 
 clusterName=$1
 clusterArn=$2
-namespace=$3
+region=$3
+namespace=$4
 
 install_demo() {
   # Set the namespace and release name
@@ -29,7 +30,7 @@ install_demo() {
 
 ###########################################################################################################
 
-aws eks --region us-east-1 update-kubeconfig --name "${clusterName}"
+aws eks --region "${region}" update-kubeconfig --name "${clusterName}"
 kubectl config use-context "${clusterArn}"
 
 install_demo
