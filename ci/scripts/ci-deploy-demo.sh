@@ -9,10 +9,13 @@ set -euo pipefail
 IFS=$'\n\t'
 set -x
 
+clusterName=$1
+clusterArn=$2
+namespace=$3
+
 install_demo() {
   # Set the namespace and release name
   release_name="opentelemetry-demo"
-  namespace=$3
 
   # if repo already exists, helm 3+ will skip
   helm --debug repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
@@ -25,8 +28,6 @@ install_demo() {
 }
 
 ###########################################################################################################
-clusterName=$1
-clusterArn=$2
 
 aws eks --region us-east-1 update-kubeconfig --name "${clusterName}"
 kubectl config use-context "${clusterArn}"
