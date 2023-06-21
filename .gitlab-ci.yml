@@ -169,7 +169,7 @@ build-ci-image-kafka:
       --out text)
     - >-
       TEMP_DD_API_KEY=$(aws ssm get-parameter --region us-east-1
-      --name ci.opentelemetry-demo.eks_secret_access_key
+      --name ci.datadog-demo.otel.datadog-api
       --with-decryption --query Parameter.Value
       --out text)
     - export AWS_ACCESS_KEY_ID=$TEMP_AWS_ACCESS_KEY_ID
