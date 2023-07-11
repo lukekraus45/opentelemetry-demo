@@ -1,6 +1,15 @@
 datadog:
+  collectEvents: true
   apm:
     portEnabled: true
+  logs:
+    enabled: true
+    containerCollectAll: true
+  networkMonitoring:
+    enabled: true
+  processAgent:
+    enabled: true
+    processCollection: true
   otlp:
     receiver:
       protocols:
