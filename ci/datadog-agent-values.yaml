@@ -1,7 +1,6 @@
 datadog:
-  apm_config:
-    remote_tagger: true
-    enabled: true
+  apm:
+    portEnabled: true
   otlp:
     receiver:
       protocols:

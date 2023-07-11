@@ -148,14 +148,6 @@ build-ci-image-kafka:
     # # For debugging
     # - aws sts get-caller-identity
     - bash $SCRIPT $CLUSTER_NAME $CLUSTER_ARN $REGION $NAMESPACE
-prod-deploy-otel-demo-eks:
-  !!merge <<: *prod-deploy
-  variables:
-    SCRIPT: ./ci/scripts/ci-deploy-demo.sh
-    CLUSTER_NAME: otel-demo
-    CLUSTER_ARN: arn:aws:eks:us-east-1:172597598159:cluster/otel-demo
-    REGION: us-east-1
-    NAMESPACE: otel
 prod-deploy-otel-ingest-demo-eks:
   !!merge <<: *prod-deploy
   variables:
