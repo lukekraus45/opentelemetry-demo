@@ -15,16 +15,17 @@ region=$3
 namespace=$4
 
 install_demo() {
-  # Set the namespace and release name
-  release_name="opentelemetry-demo"
+	# Set the namespace and release name
+	release_name="opentelemetry-demo"
 
-  # if repo already exists, helm 3+ will skip
-  helm --debug repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+	# if repo already exists, helm 3+ will skip
+	helm --debug repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 
-  # --install will run `helm install` if not already present.
-  helm --debug upgrade "${release_name}" -n "${namespace}" open-telemetry/opentelemetry-demo --install \
-    -f ./ci/values.yaml \
-    --set-string default.image.tag="v$CI_COMMIT_SHORT_SHA"
+	# --install will run `helm install` if not already present.
+	helm --debug upgrade "${release_name}" -n "${namespace}" open-telemetry/opentelemetry-demo --install \
+		-f ./ci/values.yaml \
+		--set-string default.image.tag="v$CI_COMMIT_SHORT_SHA" \
+		--force
 
 }
 
