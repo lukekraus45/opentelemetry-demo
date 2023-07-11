@@ -51,7 +51,7 @@ components:
       limits:
         memory: 200Mi
   adService:
-    env:
+    envOverrides:
       - name: DD_SERVICE
         value: $(OTEL_SERVICE_NAME)
       - name: DD_ENV
