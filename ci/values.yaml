@@ -53,9 +53,15 @@ components:
   adService:
     envOverrides:
       - name: DD_SERVICE
-        value: $(OTEL_SERVICE_NAME)
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: "metadata.labels['app.kubernetes.io/component']"
       - name: DD_ENV
-        value: $(OTEL_K8S_NAMESPACE)
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.namespace
       - name: DD_VERSION
         value: 1.0-beta
       - name: DD_TRACE_OTEL_ENABLE
