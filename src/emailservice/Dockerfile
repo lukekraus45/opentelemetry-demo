@@ -2,7 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+<<<<<<< HEAD
 FROM registry.ddbuild.io/images/mirror/ruby:3.1.2-alpine as base
+=======
+FROM ruby:3.1.4-slim as base
+>>>>>>> main
 
 FROM base as builder
 
@@ -10,8 +14,8 @@ WORKDIR /tmp
 
 COPY Gemfile Gemfile.lock ./
 
-RUN apk update && apk add make gcc musl-dev && bundle install
-
+#RUN apk update && apk add make gcc musl-dev gcompat && bundle install
+RUN apt-get update && apt-get install build-essential -y && bundle install
 FROM base as release
 
 WORKDIR /email_server

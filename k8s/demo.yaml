@@ -1,0 +1,1254 @@
+---
+# Source: demo-services/templates/redis.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  labels:
+    service: redis
+    app: redis
+    component: redis-config
+data:
+  redis.conf: |
+    # Bind on 0.0.0.0 to let the datadog agent monitor the redis server
+    bind 0.0.0.0
+
+    # allkeys-lru -> Evict any key using approximated LRU.
+    maxmemory-policy allkeys-lru
+
+    activedefrag yes
+    # Disable snapshotting (enabled by default in 6.2.0)
+    save ""
+---
+# Source: demo-services/templates/adservice.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: adservice
+  labels:
+    app: adservice
+    component: otel-demo-adservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 9555
+      protocol: TCP
+      name: http
+  selector:
+    app: adservice
+    component: otel-demo-adservice
+---
+# Source: demo-services/templates/cartservice.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cartservice
+  labels:
+    app: cartservice
+    component: otel-demo-cartservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 7070
+      protocol: TCP
+      name: http
+  selector:
+    app: cartservice
+    component: otel-demo-cartservice
+---
+# Source: demo-services/templates/checkoutservice.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkoutservice
+  labels:
+    app: checkoutservice
+    component: otel-demo-checkoutservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 5050
+      protocol: TCP
+      name: http
+  selector:
+    app: checkoutservice
+    component: otel-demo-checkoutservice
+---
+# Source: demo-services/templates/currencyservice.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: currencyservice
+  labels:
+    app: currencyservice
+    component: otel-demo-currencyservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 7000
+      protocol: TCP
+      name: http
+  selector:
+    app: currencyservice
+    component: otel-demo-currencyservice
+---
+# Source: demo-services/templates/emailservice.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: emailservice
+  labels:
+    app: emailservice
+    component: otel-demo-emailservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: emailservice
+    component: otel-demo-emailservice
+---
+# Source: demo-services/templates/featureflagservice.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: featureflagservice
+  labels:
+    app: featureflagservice
+    component: otel-demo-featureflagservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 50052
+      protocol: TCP
+      name: http
+    - port: 50053
+      name: grpc
+  selector:
+    app: featureflagservice
+    component: otel-demo-featureflagservice
+---
+# Source: demo-services/templates/frontend.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+    component: otel-demo-frontend
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: frontend
+    component: otel-demo-frontend
+---
+# Source: demo-services/templates/paymentservice.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: paymentservice
+  labels:
+    app: paymentservice
+    component: otel-demo-paymentservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 50051
+      protocol: TCP
+      name: http
+  selector:
+    app: paymentservice
+    component: otel-demo-paymentservice
+---
+# Source: demo-services/templates/postgres.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+    component: otel-demo-postgres
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 5432
+      protocol: TCP
+      name: http
+  selector:
+    app: postgres
+    component: otel-demo-postgres
+---
+# Source: demo-services/templates/productcatalogservice.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: productcatalogservice
+  labels:
+    app: productcatalogservice
+    component: otel-demo-productcatalogservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app: productcatalogservice
+    component: otel-demo-productcatalogservice
+---
+# Source: demo-services/templates/recommendationservice.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendationservice
+  labels:
+    app: recommendationservice
+    component: otel-demo-recommendationservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 9555
+      protocol: TCP
+      name: http
+  selector:
+    app: recommendationservice
+    component: otel-demo-recommendationservice
+---
+# Source: demo-services/templates/redis.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+    component: otel-demo-redis
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 6379
+      protocol: TCP
+      name: http
+  selector:
+    app: redis
+    component: otel-demo-redis
+---
+# Source: demo-services/templates/shippingservice.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: shippingservice
+  labels:
+    app: shippingservice
+    component: otel-demo-shippingservice
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+    - port: 50051
+      protocol: TCP
+      name: http
+  selector:
+    app: shippingservice
+    component: otel-demo-shippingservice
+---
+# Source: demo-services/templates/adservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adservice
+  labels:
+    app: adservice
+    component: otel-demo-adservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adservice
+      component: otel-demo-adservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: adservice
+        app: adservice
+        component: otel-demo-adservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: adservice
+        image:  registry.ddbuild.io/otel-demo/adservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=adservice,deployment.environment=otel-stanley"
+        - name: AD_SERVICE_PORT
+          value: "9555"
+---
+# Source: demo-services/templates/cartservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cartservice
+  labels:
+    app: cartservice
+    component: otel-demo-cartservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cartservice
+      component: otel-demo-cartservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: cartservice
+        app: cartservice
+        component: otel-demo-cartservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: cartservice
+        image:  registry.ddbuild.io/otel-demo/cartservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=cartservice,deployment.environment=otel-stanley"
+        - name: APP_ENV
+          value:  otel-stanley
+        - name: CART_SERVICE_PORT
+          value: "7070"
+        - name: ASPNETCORE_URLS
+          value: "http://*:$(CART_SERVICE_PORT)"
+        - name: REDIS_ADDR
+          value: "redis"
+---
+# Source: demo-services/templates/checkoutservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkoutservice
+  labels:
+    app: checkoutservice
+    component: otel-demo-checkoutservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkoutservice
+      component: otel-demo-checkoutservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: checkoutservice
+        app: checkoutservice
+        component: otel-demo-checkoutservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: checkoutservice
+        image:  registry.ddbuild.io/otel-demo/checkoutservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=checkoutservice,deployment.environment=otel-stanley"
+        - name: CHECKOUT_SERVICE_PORT
+          value: "5050"
+        - name: CART_SERVICE_PORT
+          value: "7070"
+        - name: CART_SERVICE_ADDR
+          value: "cartservice:$(CART_SERVICE_PORT)"
+        - name: CURRENCY_SERVICE_PORT
+          value: "7000"
+        - name: CURRENCY_SERVICE_ADDR
+          value: "currencyservice:$(CURRENCY_SERVICE_PORT)"
+        - name: EMAIL_SERVICE_PORT
+          value: "8080"
+        - name: EMAIL_SERVICE_ADDR
+          value: "http://emailservice:$(EMAIL_SERVICE_PORT)"
+        - name: PAYMENT_SERVICE_PORT
+          value: "50051"
+        - name: PAYMENT_SERVICE_ADDR
+          value: "paymentservice:$(PAYMENT_SERVICE_PORT)"
+        - name: PRODUCT_CATALOG_SERVICE_PORT
+          value: "3550"
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          value: "productcatalogservice:$(PRODUCT_CATALOG_SERVICE_PORT)"
+        - name: SHIPPING_SERVICE_PORT
+          value: "50051"
+        - name: SHIPPING_SERVICE_ADDR
+          value: "shippingservice:$(SHIPPING_SERVICE_PORT)"
+---
+# Source: demo-services/templates/currencyservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currencyservice
+  labels:
+    app: currencyservice
+    component: otel-demo-currencyservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: currencyservice
+      component: otel-demo-currencyservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: currencyservice
+        app: currencyservice
+        component: otel-demo-currencyservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: currencyservice
+        image:  registry.ddbuild.io/otel-demo/currencyservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=currencyservice,deployment.environment=otel-stanley"
+        - name: PORT
+          value: "7000"
+---
+# Source: demo-services/templates/emailservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emailservice
+  labels:
+    app: emailservice
+    component: otel-demo-emailservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emailservice
+      component: otel-demo-emailservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: emailservice
+        app: emailservice
+        component: otel-demo-emailservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: emailservice
+        image:  registry.ddbuild.io/otel-demo/emailservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=emailservice,deployment.environment=otel-stanley"
+        - name: PORT
+          value: "8080"
+---
+# Source: demo-services/templates/featureflagservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: featureflagservice
+  labels:
+    app: featureflagservice
+    component: otel-demo-featureflagservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: featureflagservice
+      component: otel-demo-featureflagservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: featureflagservice
+        app: featureflagservice
+        component: otel-demo-featureflagservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: featureflagservice
+        image:  registry.ddbuild.io/otel-demo/featureflagservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=featureflagservice,deployment.environment=otel-stanley"
+        - name: PORT
+          value: "50052"
+        - name: GRPC_PORT
+          value: "50053"
+        - name: DATABASE_URL
+          value: "ecto://ffs:ffs@postgres:5432/ffs"
+---
+# Source: demo-services/templates/frontend.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+    component: otel-demo-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      component: otel-demo-frontend
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: frontend
+        app: frontend
+        component: otel-demo-frontend
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: frontend
+        image:  registry.ddbuild.io/otel-demo/frontend:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=frontend,,deployment.environment=otel-stanley"
+        - name: AD_SERVICE_PORT
+          value: "9555"
+        - name: AD_SERVICE_ADDR
+          value: "adservice:$(AD_SERVICE_PORT)"
+        - name: CART_SERVICE_PORT
+          value: "7070"
+        - name: CART_SERVICE_ADDR
+          value: "cartservice:$(CART_SERVICE_PORT)"
+        - name: CHECKOUT_SERVICE_PORT
+          value: "5050"
+        - name: CHECKOUT_SERVICE_ADDR
+          value: "checkoutservice:$(CHECKOUT_SERVICE_PORT)"
+        - name: CURRENCY_SERVICE_PORT
+          value: "7000"
+        - name: CURRENCY_SERVICE_ADDR
+          value: "currencyservice:$(CURRENCY_SERVICE_PORT)"
+        - name: EMAIL_SERVICE_PORT
+          value: "8080"
+        - name: EMAIL_SERVICE_ADDR
+          value: "http://emailservice:$(EMAIL_SERVICE_PORT)"
+        - name: FRONTEND_PORT
+          value: "8080"
+        - name: FRONTEND_ADDR
+          value: ":$(FRONTEND_PORT)"
+        - name: PAYMENT_SERVICE_PORT
+          value: "50051"
+        - name: PAYMENT_SERVICE_ADDR
+          value: "paymentservice:$(PAYMENT_SERVICE_PORT)"
+        - name: PRODUCT_CATALOG_SERVICE_PORT
+          value: "3550"
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          value: "productcatalogservice:$(PRODUCT_CATALOG_SERVICE_PORT)"
+        - name: RECOMMENDATION_SERVICE_PORT
+          value: "9001"
+        - name: RECOMMENDATION_SERVICE_ADDR
+          value: "recommendationservice:$(RECOMMENDATION_SERVICE_PORT)"
+        - name: SHIPPING_SERVICE_PORT
+          value: "50051"
+        - name: SHIPPING_SERVICE_ADDR
+          value: "shippingservice:$(SHIPPING_SERVICE_PORT)"
+---
+# Source: demo-services/templates/loadgenerator.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgenerator
+  labels:
+    app: loadgenerator
+    component: otel-demo-loadgenerator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loadgenerator
+      component: otel-demo-loadgenerator
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: loadgenerator
+        app: loadgenerator
+        component: otel-demo-loadgenerator
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: loadgenerator
+        image:  registry.ddbuild.io/otel-demo/loadgenerator:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=loadgenerator,deployment.environment=otel-stanley"
+        - name: FRONTEND_PORT
+          value: "8080"
+        - name: FRONTEND_ADDR
+          value: "frontend:$(FRONTEND_PORT)"
+        - name: USERS
+          value: "10"
+        - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
+          value: python
+---
+# Source: demo-services/templates/paymentservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paymentservice
+  labels:
+    app: paymentservice
+    component: otel-demo-paymentservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paymentservice
+      component: otel-demo-paymentservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: paymentservice
+        app: paymentservice
+        component: otel-demo-paymentservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: paymentservice
+        image:  registry.ddbuild.io/otel-demo/paymentservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=paymentservice,deployment.environment=otel-stanley"
+        - name: PAYMENT_SERVICE_PORT
+          value: "50051"
+---
+# Source: demo-services/templates/postgres.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+    component: otel-demo-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+      component: otel-demo-postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        component: otel-demo-postgres
+        team: team-opentelemetry
+        service: postgres
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: postgres
+        image:  727006795293.dkr.ecr.us-east-1.amazonaws.com/postgres-official:12
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: POSTGRES_USER
+          value: ffs
+        - name: POSTGRES_DB
+          value: ffs
+        - name: POSTGRES_PASSWORD
+          value: ffs
+---
+# Source: demo-services/templates/productcatalogservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productcatalogservice
+  labels:
+    app: productcatalogservice
+    component: otel-demo-productcatalogservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: productcatalogservice
+      component: otel-demo-productcatalogservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: productcatalogservice
+        app: productcatalogservice
+        component: otel-demo-productcatalogservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: productcatalogservice
+        image:  registry.ddbuild.io/otel-demo/productcatalogservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=productcatalogservice,deployment.environment=otel-stanley"
+        - name: PRODUCT_CATALOG_SERVICE_PORT
+          value: "3550"
+---
+# Source: demo-services/templates/recommendationservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendationservice
+  labels:
+    app: recommendationservice
+    component: otel-demo-recommendationservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendationservice
+      component: otel-demo-recommendationservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: recommendationservice
+        app: recommendationservice
+        component: otel-demo-recommendationservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: recommendationservice
+        image:  registry.ddbuild.io/otel-demo/recommendationservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=recommendationservice,deployment.environment=otel-stanley"
+        - name: RECOMMENDATION_SERVICE_PORT
+          value: "9001"
+        - name: OTEL_PYTHON_LOG_CORRELATION
+          value: "true"
+        - name: PRODUCT_CATALOG_SERVICE_PORT
+          value: "3550"
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          value: "productcatalogservice:$(PRODUCT_CATALOG_SERVICE_PORT)"
+---
+# Source: demo-services/templates/redis.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels:
+    app: redis
+    component: otel-demo-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      component: otel-demo-redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        component: otel-demo-redis
+        team: team-opentelemetry
+        service: redis
+    spec:
+
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: redis
+        image:  727006795293.dkr.ecr.us-east-1.amazonaws.com/redis:6.2.7
+        imagePullPolicy: IfNotPresent
+        command:
+          - /usr/local/bin/redis-server 
+          - /etc/config/redis.conf
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+          - name: HOST_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+            # The application SDK must use this environment variable in order to succesfully
+          - name: DD_DATACENTER
+            value: us1.staging.dog
+          - name: DD_SITE
+            value: datad0g.com
+        volumeMounts:
+          - name: config
+            mountPath: /etc/config
+      volumes:
+        - name: config
+          configMap:
+            name: redis-config
+---
+# Source: demo-services/templates/shippingservice.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shippingservice
+  labels:
+    app: shippingservice
+    component: otel-demo-shippingservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shippingservice
+      component: otel-demo-shippingservice
+  template:
+    metadata:
+      labels:
+        team: team-opentelemetry
+        service: shippingservice
+        app: shippingservice
+        component: otel-demo-shippingservice
+    spec:
+      
+      tolerations:
+      - key: node
+        operator: Equal
+        value: otel-small
+        effect: NoSchedule
+      containers:
+      - name: shippingservice
+        image:  registry.ddbuild.io/otel-demo/shippingservice:v0.1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+          requests:
+            memory: 200Mi
+            cpu: 200m
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+               apiVersion: v1
+               fieldPath: status.podIP
+        - name: OTEL_RESOURCE
+          value: k8s.pod.ip=$(MY_POD_IP)
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+          # The application SDK must use this environment variable in order to succesfully
+        - name: DD_DATACENTER
+          value: us1.staging.dog
+        - name: DD_SITE
+          value: datad0g.com
+        - name: OTEL_AGENT_ENDPOINT
+          value: "$(HOST_IP)"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://$(OTEL_AGENT_ENDPOINT):5317"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=shippingservice,deployment.environment=otel-stanley"
+        - name: SHIPPING_SERVICE_PORT
+          value: "50051"
