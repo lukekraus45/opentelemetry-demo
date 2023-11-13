@@ -135,6 +135,7 @@ if __name__ == "__main__":
         resource=Resource.create(
             {
                 'service.name': service_name,
+               'datadog.container.tag.team': "otel",
             }
         ),
     )
