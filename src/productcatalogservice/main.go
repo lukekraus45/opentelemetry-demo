@@ -63,6 +63,7 @@ func initResource() *sdkresource.Resource {
 			sdkresource.WithProcess(),
 			sdkresource.WithContainer(),
 			sdkresource.WithHost(),
+			sdkresource.WithAttributes(attribute.String("datadog.container.tag.team", "otel")),
 		)
 		resource, _ = sdkresource.Merge(
 			sdkresource.Default(),
