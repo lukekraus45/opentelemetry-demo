@@ -38,8 +38,8 @@ func main() {
 	mux.HandleFunc("/inject", func(w http.ResponseWriter, r *http.Request) {
 		_, otelSpan := otelTracer.Start(r.Context(), "otel_api_span")
 		log.WithFields(log.Fields{
-			"dd.span_id": otelSpan.SpanContext().SpanID().String(),
-			"dd.trace_id":  otelSpan.SpanContext().TraceID().String(),
+			"dd.span_id":  otelSpan.SpanContext().SpanID().String(),
+			"dd.trace_id": otelSpan.SpanContext().TraceID().String(),
 			"service":     "go-server-dd",
 			"env":         "otel-ingest-staging",
 		}).Info("Doing work in server")
