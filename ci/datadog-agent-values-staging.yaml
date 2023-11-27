@@ -2,5 +2,8 @@ agents:
   nodeSelector:
     alpha.eksctl.io/nodegroup-name: ng-4
 datadog:
+  logs:
+    enabled: true
+    containerCollectAll: true
   tags:
     - "env:otel-ingest-staging"

@@ -142,6 +142,18 @@ build-ci-image-orderproducer:
     DOCKERFILE: src/orderproducerservice/Dockerfile
     IMAGE_TAG_SUFFIX: orderproducer
     CONTEXT: .
+build-ci-image-goserverdd:
+  !!merge <<: *build-ci-image
+  variables:
+    DOCKERFILE: src/go_server_dd/Dockerfile
+    IMAGE_TAG_SUFFIX: go-server-dd
+    CONTEXT: .
+build-ci-image-javaclientotel:
+  !!merge <<: *build-ci-image
+  variables:
+    DOCKERFILE: src/java_client_otel/Dockerfile
+    IMAGE_TAG_SUFFIX: java-client-otel
+    CONTEXT: .
 .prod-deploy: &prod-deploy
   stage: prod-deploy
   tags: ["runner:docker", "size:large"]
@@ -204,6 +216,13 @@ prod-deploy-otel-ingest-agent-eks:
     # - aws sts get-caller-identity
     - bash $SCRIPT
 
+staging-deploy-otel-demo-eks-reinvent:
+  !!merge <<: *staging-deploy
+  variables:
+    SCRIPT: ./ci/scripts/ci-deploy-reinvent.sh
+    CLUSTER_NAME: dd-otel
+    CLUSTER_ARN: "arn:aws:eks:us-east-1:601427279990:cluster/dd-otel"
+    REGION: us-east-1
 # Demo env:otel-staging
 staging-deploy-otel-demo-eks:
   !!merge <<: *staging-deploy

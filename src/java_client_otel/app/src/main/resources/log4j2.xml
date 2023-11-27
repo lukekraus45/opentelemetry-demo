@@ -1,0 +1,20 @@
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="ConsoleJSONAppender" target="SYSTEM_OUT">
+        	<JsonLayout complete="false" compact="true">
+                <KeyValuePair key="service" value="java-client-otel" />
+                <KeyValuePair key="env" value="otel-staging" />
+            	<KeyValuePair key="dd.trace_id" value="$${ctx:trace_id}" />
+                <KeyValuePair key="dd.span_id" value="$${ctx:span_id}" />
+        	</JsonLayout>
+    	</Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="java_client_otel" level="info" additivity="true">
+            <AppenderRef ref="ConsoleJSONAppender"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="ConsoleJSONAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
