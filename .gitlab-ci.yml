@@ -215,6 +215,17 @@ staging-deploy-otel-demo-eks:
     CLUSTER_NAME: dd-otel
     CLUSTER_ARN: "arn:aws:eks:us-east-1:601427279990:cluster/dd-otel"
     REGION: us-east-1
+# Demo env:kafka-poc
+kafka-poc-deploy-otel-demo-eks:
+  !!merge <<: *staging-deploy
+  variables:
+    NAMESPACE: kafka-poc
+    VALUES: ./ci/values-kafka-poc.yaml
+    NODE_GROUP: kafka-poc-ng
+    SCRIPT: ./ci/scripts/ci-deploy-demo-staging.sh
+    CLUSTER_NAME: dd-otel
+    CLUSTER_ARN: "arn:aws:eks:us-east-1:601427279990:cluster/dd-otel"
+    REGION: us-east-1
 # Demo env:otel-ingest-staging
 staging-deploy-otel-ingest-demo-eks:
   !!merge <<: *staging-deploy
