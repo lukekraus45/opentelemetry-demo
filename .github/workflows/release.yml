@@ -8,6 +8,7 @@ on:
 
 jobs:
   build_and_push_images:
+<<<<<<< HEAD
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -121,3 +122,10 @@ jobs:
             ${{ env.GHCR_REPO }}:${{ env.RELEASE_VERSION || 'pr' }}-${{ matrix.file_tag.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha
+=======
+    uses: ./.github/workflows/build-images.yml
+    with:
+      push: true
+      version: ${{ github.event.release.tag_name }}
+    secrets: inherit
+>>>>>>> main

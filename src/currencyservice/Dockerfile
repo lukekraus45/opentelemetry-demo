@@ -14,11 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+<<<<<<< HEAD
 FROM registry.ddbuild.io/images/mirror/alpine:latest AS builder
+=======
+FROM alpine:3.18 as builder
+>>>>>>> main
 
-RUN apk update
-RUN apk add git cmake make g++ grpc-dev re2-dev protobuf-dev c-ares-dev
+RUN apk update && apk add git cmake make g++ grpc-dev protobuf-dev linux-headers
 
+<<<<<<< HEAD
 ARG OPENTELEMETRY_CPP_VERSION=1.9.0
 
 RUN git clone https://github.com/open-telemetry/opentelemetry-cpp \
@@ -30,6 +34,19 @@ RUN git clone https://github.com/open-telemetry/opentelemetry-cpp \
 				-DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
 				-DWITH_EXAMPLES=OFF -DWITH_OTLP=ON -DWITH_OTLP_GRPC=ON \
 	&& make -j$(nproc || sysctl -n hw.ncpu || echo 1) install && cd ../.. && rm -rf opentelemetry-cpp
+=======
+ARG OPENTELEMETRY_CPP_VERSION=1.13.0
+
+RUN git clone https://github.com/open-telemetry/opentelemetry-cpp \
+	  && cd opentelemetry-cpp/ \
+    && git checkout tags/v${OPENTELEMETRY_CPP_VERSION} -b v${OPENTELEMETRY_CPP_VERSION} \
+    && mkdir build \
+    && cd build \
+    && cmake .. -DCMAKE_CXX_STANDARD=17 -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+          -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
+          -DWITH_EXAMPLES=OFF -DWITH_OTLP_GRPC=ON -DWITH_ABSEIL=ON \
+    && make -j$(nproc || sysctl -n hw.ncpu || echo 1) install && cd ../..
+>>>>>>> main
 
 COPY . /currencyservice
 
@@ -38,6 +55,7 @@ RUN cd /currencyservice \
     && cmake .. \
     && make -j$(nproc || sysctl -n hw.ncpu || echo 1) install
 
+<<<<<<< HEAD
 FROM registry.ddbuild.io/images/mirror/alpine:latest 
 
 WORKDIR /usr/src/app/
@@ -46,6 +64,13 @@ RUN apk update
 RUN apk add grpc-dev re2-dev protobuf-dev c-ares-dev
 
 COPY --from=builder /usr/local/bin/currencyservice ./
+=======
+
+FROM alpine:3.18 as release
+
+RUN apk update && apk add grpc-dev protobuf-dev
+COPY --from=builder /usr/local /usr/local
+>>>>>>> main
 
 EXPOSE ${CURRENCY_SERVICE_PORT}
 ENTRYPOINT ./currencyservice ${CURRENCY_SERVICE_PORT}
