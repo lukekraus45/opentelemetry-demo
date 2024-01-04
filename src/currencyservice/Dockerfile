@@ -38,7 +38,7 @@ RUN cd /currencyservice \
     && make -j$(nproc || sysctl -n hw.ncpu || echo 1) install
 
 
-FROM registry.ddbuild.io/images/mirror/alpine:3.18 as release
+FROM registry.ddbuild.io/images/mirror/alpine:3.18 AS release
 
 RUN apk update && apk add grpc-dev protobuf-dev
 COPY --from=builder /usr/local /usr/local

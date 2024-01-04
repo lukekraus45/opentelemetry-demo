@@ -15,7 +15,7 @@
 # limitations under the License.
 
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1 AS builder
+FROM --platform=$BUILDPLATFORM registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1 AS builder
 ARG TARGETARCH
 
 WORKDIR /usr/src/app/

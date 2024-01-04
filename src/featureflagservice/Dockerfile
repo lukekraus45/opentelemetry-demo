@@ -23,7 +23,7 @@ ARG OTP_VERSION=23.3.4.14
 ARG DEBIAN_VERSION=buster-20210902-slim
 
 ARG BUILDER_IMAGE="registry.ddbuild.io/images/mirror/hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
-ARG RUNNER_IMAGE="registry.ddbuild.io/images/mirror/debian:bullseye-slim"
+ARG RUNNER_IMAGE="registry.ddbuild.io/images/mirror/debian:${DEBIAN_VERSION}"
 
 FROM ${BUILDER_IMAGE} as builder
 
