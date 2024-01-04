@@ -9,7 +9,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"go.opentelemetry.io/otel/sdk/instrumentation"
 	"io/ioutil"
 	"net"
 	"os"
@@ -101,8 +100,7 @@ func initMeterProvider() *sdkmetric.MeterProvider {
 	mp := sdkmetric.NewMeterProvider(
 		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(exporter)),
 		sdkmetric.WithResource(initResource()),
-<<<<<<< HEAD
-		sdkmetric.WithView(			
+		sdkmetric.WithView(
 			sdkmetric.NewView(
 				sdkmetric.Instrument{Scope: instrumentation.Scope{Name: "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"}},
 				sdkmetric.Stream{
@@ -113,12 +111,6 @@ func initMeterProvider() *sdkmetric.MeterProvider {
 				},
 			),
 		),
-=======
-		sdkmetric.WithView(sdkmetric.NewView(
-			sdkmetric.Instrument{Scope: instrumentation.Scope{Name: "go.opentelemetry.io/contrib/google.golang.org/grpc/otelgrpc"}},
-			sdkmetric.Stream{Aggregation: sdkmetric.AggregationDrop{}},
-		)),
->>>>>>> main
 	)
 	otel.SetMeterProvider(mp)
 	return mp

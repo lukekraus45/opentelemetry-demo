@@ -2,11 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-<<<<<<< HEAD
-FROM registry.ddbuild.io/images/mirror/ruby:3.1.2-alpine as base
-=======
-FROM ruby:3.2.2-slim as base
->>>>>>> main
+FROM registry.ddbuild.io/images/mirror/ruby:3.2.2-slim as base
 
 FROM base as builder
 

@@ -14,11 +14,7 @@ RUN gradle shadowJar
 
 FROM gcr.io/distroless/java17-debian11
 
-<<<<<<< HEAD
-ARG version=1.23.0
-=======
 ARG version=1.31.0
->>>>>>> main
 WORKDIR /usr/src/app/
 
 COPY --from=builder /usr/src/app/build/libs/frauddetectionservice-1.0-all.jar ./

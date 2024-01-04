@@ -2,11 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-<<<<<<< HEAD
-FROM registry.ddbuild.io/images/mirror/python:3.9.13 AS base
-=======
-FROM python:3.12-slim-bullseye as base
->>>>>>> main
+FROM registry.ddbuild.io/images/mirror/python:3.12-slim-bullseye as base
 
 FROM base as builder
 RUN apt-get -qq update \

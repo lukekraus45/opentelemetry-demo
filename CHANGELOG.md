@@ -114,19 +114,12 @@ release.
   ([#935](https://github.com/open-telemetry/opentelemetry-demo/pull/935))
 * [cartservice] update service to .NET 7
   ([#942](https://github.com/open-telemetry/opentelemetry-demo/pull/942))
-<<<<<<< HEAD
-* [cartservice] update .NET package to 1.5.1 release
-  ([#935](https://github.com/open-telemetry/opentelemetry-demo/pull/957))
-=======
 * [tests] Add trace-based testing examples
   ([#877](https://github.com/open-telemetry/opentelemetry-demo/pull/877))
->>>>>>> main
 * Introduce minimal mode to run demo
   ([#872](https://github.com/open-telemetry/opentelemetry-demo/pull/872))
 * [frontendproxy]Envoy expose a route for the collector to route frontend spans
   ([#938](https://github.com/open-telemetry/opentelemetry-demo/pull/938))
-<<<<<<< HEAD
-=======
 * [frontend] update JS SDKs to 1.15.0/0.41.0
   ([#853](https://github.com/open-telemetry/opentelemetry-demo/pull/853))
 * [shippingservice] Update Rust dependencies and add TelemetryResourceDetector
@@ -161,7 +154,6 @@ release.
   ([#1086](https://github.com/open-telemetry/opentelemetry-demo/pull/1086))
 * [TraceTests] Update span attributes to align with new IBM/sarama instrumentation
   ([#1096](https://github.com/open-telemetry/opentelemetry-demo/pull/1096))
->>>>>>> main
 
 ## 1.4.0
 

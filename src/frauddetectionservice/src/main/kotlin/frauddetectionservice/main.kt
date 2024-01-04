@@ -19,13 +19,9 @@ import kotlin.system.exitProcess
 const val topic = "orders"
 const val groupID = "frauddetectionservice"
 
-<<<<<<< HEAD
-fun main(args: Array<String>) {
-=======
 private val logger: Logger = LogManager.getLogger(groupID)
 
 fun main() {
->>>>>>> main
     val props = Properties()
     props[KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java.name
     props[VALUE_DESERIALIZER_CLASS_CONFIG] = ByteArrayDeserializer::class.java.name

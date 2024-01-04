@@ -7,15 +7,12 @@ on:
     branches: [ main ]
 
 jobs:
-<<<<<<< HEAD
-=======
   build_images:
     uses: ./.github/workflows/build-images.yml
     with:
       push: false
       version: 'dev'
 
->>>>>>> main
   markdownlint:
     runs-on: ubuntu-latest
     steps:

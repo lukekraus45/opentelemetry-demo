@@ -1,12 +1,8 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
-<<<<<<< HEAD
-FROM registry.ddbuild.io/images/mirror/python:3.10 AS base
-=======
 
-FROM python:3.12-slim-bullseye as base
->>>>>>> main
+FROM registry.ddbuild.io/images/mirror/python:3.12-slim-bullseye as base
 
 #
 # Fetch requirements
@@ -29,11 +25,7 @@ FROM base as grpc-builder
 WORKDIR /usr/src/app/
 COPY ./pb/ ./proto/
 
-<<<<<<< HEAD
-RUN python -m pip install grpcio-tools==1.48.2
-=======
 RUN python -m pip install grpcio-tools==1.59.2
->>>>>>> main
 RUN python -m grpc_tools.protoc -I=./proto/ --python_out=./ --grpc_python_out=./ ./proto/demo.proto
 
 #
