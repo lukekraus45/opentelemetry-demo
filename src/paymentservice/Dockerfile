@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-FROM registry.ddbuild.io/images/mirror/node:18-alpine AS build
+FROM registry.ddbuild.io/images/mirror/node:21-alpine AS build
 
 WORKDIR /usr/src/app/
 
@@ -13,7 +13,7 @@ RUN apk add --no-cache python3 make g++ && npm ci --omit=dev
 RUN  chown root:root -R /usr/src/app/node_modules
 # -----------------------------------------------------------------------------
 
-FROM registry.ddbuild.io/images/mirror/node:18-alpine
+FROM registry.ddbuild.io/images/mirror/node:21-alpine
 
 USER node
 WORKDIR /usr/src/app/

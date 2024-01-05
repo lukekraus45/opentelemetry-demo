@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-FROM registry.ddbuild.io/images/java:corretto-17 AS builder
+FROM registry.ddbuild.io/images/mirror/eclipse-temurin:21-jdk as builder
 
 WORKDIR /usr/src/app/
 
@@ -18,14 +18,13 @@ RUN ./gradlew installDist -PprotoSourceDir=./proto
 
 # -----------------------------------------------------------------------------
 
-FROM registry.ddbuild.io/images/java:corretto-17
+FROM registry.ddbuild.io/images/mirror/eclipse-temurin:21-jre
 
-ARG version=1.24.0
+ARG version=1.31.0
 WORKDIR /usr/src/app/
 
 COPY --from=builder /usr/src/app/ ./
 ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v$version/opentelemetry-javaagent.jar /usr/src/app/opentelemetry-javaagent.jar
-RUN chmod 644 /usr/src/app/opentelemetry-javaagent.jar
 ENV JAVA_TOOL_OPTIONS=-javaagent:/usr/src/app/opentelemetry-javaagent.jar
 
 EXPOSE ${AD_SERVICE_PORT}
