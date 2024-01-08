@@ -110,6 +110,8 @@ spec:
             value: $(HOST_IP)
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: http://$(OTEL_COLLECTOR_NAME):4317
+          - name: DD_AGENT_HOST
+            value: http://$(HOST_IP)
           - name: OTEL_RESOURCE_ATTRIBUTES
             value: >-
               service.name=$(OTEL_SERVICE_NAME),
