@@ -34,7 +34,9 @@ get_flag(Ctx, #{name := Name}) ->
       {grpc_error, {?GRPC_STATUS_NOT_FOUND, <<"the requested feature flag does not exist">>}};
     #{'__struct__' := 'Elixir.Featureflagservice.FeatureFlags.FeatureFlag',
       description := Description,
-      enabled := Enabled
+      enabled := Enabled,
+      inserted_at := CreatedAt,
+      updated_at := UpdatedAt
     } ->
       RandomNumber = rand:uniform(100), % Generate a random number between 0 and 100
       Probability = trunc(Enabled * 100), % Convert the Enabled value to a percentage
@@ -44,9 +46,15 @@ get_flag(Ctx, #{name := Name}) ->
       ?set_attribute('app.featureflag.raw_value', Enabled),
       ?set_attribute('app.featureflag.enabled', FlagEnabledValue),
 
+      {ok, Epoch} = 'Elixir.NaiveDateTime':from_erl({{1970, 1, 1}, {0, 0, 0}}),
+      CreatedAtSeconds = 'Elixir.NaiveDateTime':diff(CreatedAt, Epoch),
+      UpdatedAtSeconds = 'Elixir.NaiveDateTime':diff(UpdatedAt, Epoch),
+
       Flag = #{name => Name,
         description => Description,
-        enabled => FlagEnabledValue},
+        enabled => FlagEnabledValue,
+        created_at => #{seconds => CreatedAtSeconds, nanos => 0},
+        updated_at => #{seconds => UpdatedAtSeconds, nanos => 0}},
 
       {ok, #{flag => Flag}, Ctx}
   end.

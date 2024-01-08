@@ -1,8 +1,7 @@
-#!/usr/bin/python
-
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
-
+#!/usr/bin/python
+#
 
 # Python
 import os
@@ -136,6 +135,7 @@ if __name__ == "__main__":
         resource=Resource.create(
             {
                 'service.name': service_name,
+               'datadog.container.tag.team': "otel",
             }
         ),
     )

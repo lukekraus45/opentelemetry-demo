@@ -35,14 +35,14 @@ defmodule Featureflagservice.FeatureFlags do
 
   ## Examples
 
-      iex> get_feature_flag!(foo)
+      iex> get_feature_flag!(123)
       %FeatureFlag{}
 
-      iex> get_feature_flag!(bar)
+      iex> get_feature_flag!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_feature_flag!(name), do: Repo.get!(FeatureFlag, name)
+  def get_feature_flag!(id), do: Repo.get!(FeatureFlag, id)
 
   @doc """
   Gets a single feature_flag by name.
