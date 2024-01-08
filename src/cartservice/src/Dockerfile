@@ -15,7 +15,7 @@
 # limitations under the License.
 
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1 AS builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0.100-1 AS builder
 ARG TARGETARCH
 
 WORKDIR /usr/src/app/
@@ -23,16 +23,14 @@ WORKDIR /usr/src/app/
 COPY ./src/cartservice/ ./
 COPY ./pb/ ./src/protos/
 
-RUN \
-  RUNTIME_IDENTIIFER=linux-musl-x64; \
-  if [ "$(uname -m)" = "aarch64" ]; then RUNTIME_IDENTIIFER=linux-musl-arm64; fi; \
-  dotnet restore ./src/cartservice.csproj -r $RUNTIME_IDENTIIFER && \
-  dotnet publish ./src/cartservice.csproj -p:PublishSingleFile=true -r $RUNTIME_IDENTIIFER --self-contained true -p:PublishTrimmed=False -p:TrimMode=Link -c Release -o /cartservice --no-restore
+RUN dotnet restore ./src/cartservice.csproj -v d -r linux-musl-$TARGETARCH
+
+RUN dotnet publish ./src/cartservice.csproj -v d -r linux-musl-$TARGETARCH --no-restore -o /cartservice
 
 # -----------------------------------------------------------------------------
 
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-FROM registry.ddbuild.io/images/mirror/dotnet/runtime-deps:8.0.0-alpine3.18
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.0-alpine3.18
 
 WORKDIR /usr/src/app/
 COPY --from=builder /cartservice/ ./

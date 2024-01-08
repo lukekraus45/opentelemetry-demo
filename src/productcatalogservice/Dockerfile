@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-FROM registry.ddbuild.io/images/mirror/golang:1.21.4-alpine AS builder
+FROM golang:1.21.4-alpine AS builder
 
 WORKDIR /usr/src/app/
 
@@ -13,7 +13,7 @@ RUN go build -o /go/bin/productcatalogservice/
 
 # -----------------------------------------------------------------------------
 
-FROM registry.ddbuild.io/images/mirror/alpine:latest AS release
+FROM alpine AS release
 
 WORKDIR /usr/src/app/
 

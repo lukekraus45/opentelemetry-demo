@@ -16,27 +16,3 @@
 #    pipelines:
 #      traces:
 #        exporters: [spanmetrics, otlphttp/example]
-
-exporters:
-  datadog:
-    api:
-      key: DD_API_KEY   # Set/Replace with your Datadog API key
-    host_metadata:
-      tags:
-        - otel:true
-
-processors:
-  resource:
-    attributes:
-      - key: deployment.environment   # Set env tag for Datadog
-        value: "otel"
-        action: upsert
-
-service:
-  pipelines:
-    traces:
-      processors: [spanmetrics, batch, resource]
-      exporters: [logging, jaeger, datadog]
-    metrics:
-      processors: [batch, resource]
-      exporters: [prometheus, logging, datadog]

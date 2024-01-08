@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-FROM registry.ddbuild.io/images/mirror/eclipse-temurin:21-jdk as builder
+FROM eclipse-temurin:21-jdk as builder
 
 WORKDIR /usr/src/app/
 
-COPY ./src/adservice/gradlew* ./src/adservice/settings.gradle* ./src/adservice/build.gradle ./
+COPY ./src/adservice/gradlew* ./src/adservice/settings.gradle* ./src/adservice/build.gradle .
 COPY ./src/adservice/gradle ./gradle
 
 RUN ./gradlew
@@ -18,7 +18,7 @@ RUN ./gradlew installDist -PprotoSourceDir=./proto
 
 # -----------------------------------------------------------------------------
 
-FROM registry.ddbuild.io/images/mirror/eclipse-temurin:21-jre
+FROM eclipse-temurin:21-jre
 
 ARG version=1.31.0
 WORKDIR /usr/src/app/
