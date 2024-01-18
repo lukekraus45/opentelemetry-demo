@@ -9,6 +9,7 @@ datadog:
     port: 8126
   logs:
     enabled: true
+    containerCollectAll: true
   env:
     - name: DD_API_KEY
       valueFrom:

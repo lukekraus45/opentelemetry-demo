@@ -2,3 +2,20 @@ default:
   schedulingRules:
     nodeSelector:
       alpha.eksctl.io/nodegroup-name: ng-7
+  envOverrides:
+    - name: OTEL_USE_DD_SDK
+      value: "true"
+    - name: DD_TRACE_OTEL_ENABLED
+      value: "true"
+    - name: DD_AGENT_HOST
+      value: $(HOST_IP)
+    - name: OTEL_TRACES_EXPORTER
+      value: "console"
+    - name: OTEL_METRICS_EXPORTER
+      value: "console"
+    - name: OTEL_LOGS_EXPORTER
+      value: "console"
+    - name: OTEL_COLLECTOR_NAME
+      value: ""
+    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+      value: ""

@@ -33,6 +33,7 @@ import (
 	sdkresource "go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
+	ddotel "gopkg.in/DataDog/dd-trace-go.v1/ddtrace/opentelemetry"
 
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -89,6 +90,13 @@ func initTracerProvider() *sdktrace.TracerProvider {
 	return tp
 }
 
+func initDDTracerProvider() *ddotel.TracerProvider {
+	tp := ddotel.NewTracerProvider()
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
+	return tp
+}
+
 func initMeterProvider() *sdkmetric.MeterProvider {
 	ctx := context.Background()
 
@@ -128,12 +136,21 @@ func disallowedAttr(v ...string) attribute.Filter {
 }
 
 func main() {
-	tp := initTracerProvider()
-	defer func() {
-		if err := tp.Shutdown(context.Background()); err != nil {
-			log.Fatalf("Tracer Provider Shutdown: %v", err)
-		}
-	}()
+	if useDD := os.Getenv("OTEL_USE_DD_SDK"); useDD == "true" {
+		tp := initDDTracerProvider()
+		defer func() {
+			if err := tp.Shutdown(); err != nil {
+				log.Printf("Error shutting down tracer provider: %v", err)
+			}
+		}()
+	} else {
+		tp := initTracerProvider()
+		defer func() {
+			if err := tp.Shutdown(context.Background()); err != nil {
+				log.Printf("Error shutting down tracer provider: %v", err)
+			}
+		}()
+	}
 
 	mp := initMeterProvider()
 	defer func() {
