@@ -15,7 +15,3 @@ default:
       value: "console"
     - name: OTEL_LOGS_EXPORTER
       value: "console"
-    - name: OTEL_COLLECTOR_NAME
-      value: ""
-    - name: OTEL_EXPORTER_OTLP_ENDPOINT
-      value: ""
