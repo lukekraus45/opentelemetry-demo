@@ -10,8 +10,8 @@ WORKDIR /home/otel/orderproducerservice
 COPY ./pb/ ./app/src/main/proto/
 RUN ./gradlew shadowJar
 
-ENV JAVA_TOOL_OPTIONS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=opentelemetry-demo-orderproducer -Dcom.sun.management.jmxremote.port=1097 -Dcom.sun.management.jmxremote.rmi.port=1097"
+ENV JAVA_TOOL_OPTIONS="-javaagent:../opentelemetry-javaagent.jar -javaagent:../dd-java-agent.jar -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=opentelemetry-demo-orderproducer -Dcom.sun.management.jmxremote.port=1097 -Dcom.sun.management.jmxremote.rmi.port=1097"
 ENV JMX_PORT=1097
 ENV DD_TRACE_OTEL_ENABLED=true
 
-ENTRYPOINT ["java","-javaagent:../opentelemetry-javaagent.jar",  "-jar" , "app/build/libs/app-all.jar"]
+ENTRYPOINT ["java", "-jar" , "app/build/libs/app-all.jar"]
