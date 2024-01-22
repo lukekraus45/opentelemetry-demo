@@ -8,11 +8,17 @@ require "sinatra"
 require "opentelemetry/sdk"
 require "opentelemetry/exporter/otlp"
 require "opentelemetry/instrumentation/sinatra"
+require 'datadog/opentelemetry'
 
 set :port, ENV["EMAIL_SERVICE_PORT"]
 
-OpenTelemetry::SDK.configure do |c|
-  c.use "OpenTelemetry::Instrumentation::Sinatra"
+if ENV["DD_TRACE_OTEL_ENABLED"] == "true"
+  Datadog.configure do |c|
+  end
+else
+  OpenTelemetry::SDK.configure do |c|
+    c.use "OpenTelemetry::Instrumentation::Sinatra"
+  end
 end
 
 post "/send_order_confirmation" do

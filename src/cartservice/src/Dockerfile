@@ -39,5 +39,11 @@ COPY --from=builder /cartservice/ ./
 
 ENV DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
 
+# Enable Datadog automatic instrumentation
+ENV CORECLR_ENABLE_PROFILING=1
+ENV CORECLR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}
+ENV CORECLR_PROFILER_PATH=/usr/src/app/datadog/${RUNTIME_IDENTIIFER}/Datadog.Trace.ClrProfiler.Native.so
+ENV DD_DOTNET_TRACER_HOME=/usr/src/app/datadog
+
 EXPOSE ${CART_SERVICE_PORT}
 ENTRYPOINT [ "./cartservice" ]

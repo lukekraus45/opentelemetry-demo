@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 const opentelemetry = require("@opentelemetry/sdk-node")
+const tracer = require('dd-trace').init({})
+const { TracerProvider } = tracer
 const {getNodeAutoInstrumentations} = require("@opentelemetry/auto-instrumentations-node")
 const {OTLPTraceExporter} = require('@opentelemetry/exporter-trace-otlp-grpc')
 const {OTLPMetricExporter} = require('@opentelemetry/exporter-metrics-otlp-grpc')
@@ -38,4 +40,9 @@ const sdk = new opentelemetry.NodeSDK({
   ],
 })
 
-sdk.start();
+if (process.env.DD_TRACE_OTEL_ENABLED === "true") {
+  const provider = new TracerProvider();
+  provider.register();
+} else {
+  sdk.start();
+}

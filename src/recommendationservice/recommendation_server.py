@@ -10,6 +10,7 @@ from concurrent import futures
 
 # Pip
 import grpc
+from ddtrace.opentelemetry import TracerProvider as DDTracerProvider
 from opentelemetry import trace, metrics
 from opentelemetry._logs import set_logger_provider
 from opentelemetry.exporter.otlp.proto.grpc._log_exporter import (
@@ -32,6 +33,12 @@ from metrics import (
 
 cached_ids = []
 first_run = True
+
+
+if os.environ.get("DD_TRACE_OTEL_ENABLED") == "true":
+    print("Initializing DD tracer for OTel instrumentation")
+    tracer_provider = DDTracerProvider()
+    trace.set_tracer_provider(tracer_provider)
 
 
 class RecommendationService(demo_pb2_grpc.RecommendationServiceServicer):

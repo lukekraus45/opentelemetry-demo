@@ -145,7 +145,7 @@ func main() {
 	var port string
 	mustMapEnv(&port, "CHECKOUT_SERVICE_PORT")
 
-	if useDD := os.Getenv("OTEL_USE_DD_SDK"); useDD == "true" {
+	if useDD := os.Getenv("DD_TRACE_OTEL_ENABLED"); useDD == "true" {
 		tp := initDDTracerProvider()
 		defer func() {
 			if err := tp.Shutdown(); err != nil {

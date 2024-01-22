@@ -3,7 +3,7 @@ default:
     nodeSelector:
       alpha.eksctl.io/nodegroup-name: ng-7
   envOverrides:
-    - name: OTEL_USE_DD_SDK
+    - name: DD_TRACE_ENABLED
       value: "true"
     - name: DD_TRACE_OTEL_ENABLED
       value: "true"

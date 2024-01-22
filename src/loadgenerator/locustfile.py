@@ -5,10 +5,12 @@
 
 
 import json
+import os
 import random
 import uuid
 from locust import HttpUser, task, between
 
+from ddtrace.opentelemetry import TracerProvider as DDTracerProvider
 from opentelemetry import context, baggage, trace
 from opentelemetry.metrics import set_meter_provider
 from opentelemetry.sdk.metrics import MeterProvider
@@ -25,9 +27,14 @@ from opentelemetry.instrumentation.urllib3 import URLLib3Instrumentor
 exporter = OTLPMetricExporter(insecure=True)
 set_meter_provider(MeterProvider([PeriodicExportingMetricReader(exporter)]))
 
-tracer_provider = TracerProvider()
-trace.set_tracer_provider(tracer_provider)
-tracer_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
+if os.environ.get("DD_TRACE_OTEL_ENABLED") == "true":
+    print("Initializing DD tracer for OTel instrumentation")
+    tracer_provider = DDTracerProvider()
+    trace.set_tracer_provider(tracer_provider)
+else:
+    tracer_provider = TracerProvider()
+    trace.set_tracer_provider(tracer_provider)
+    tracer_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
 
 # Instrumenting manually to avoid error with locust gevent monkey
 Jinja2Instrumentor().instrument()
