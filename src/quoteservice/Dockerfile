@@ -12,9 +12,6 @@ RUN chmod +x /usr/local/bin/install-php-extensions \
     protobuf \
     opentelemetry
 
-RUN curl -LO https://github.com/DataDog/dd-trace-php/releases/latest/download/datadog-setup.php
-RUN php datadog-setup.php --php-bin=all
-
 WORKDIR /var/www
 CMD php public/index.php
 USER www-data
@@ -37,3 +34,6 @@ FROM base as final
 COPY --from=vendor /tmp/vendor/ ./vendor/
 COPY ./src/quoteservice/ /var/www
 
+WORKDIR /var/www
+RUN curl -LO https://github.com/DataDog/dd-trace-php/releases/latest/download/datadog-setup.php
+RUN php datadog-setup.php --php-bin=all

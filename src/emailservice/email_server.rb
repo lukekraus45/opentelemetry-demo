@@ -12,12 +12,13 @@ require 'datadog/opentelemetry'
 
 set :port, ENV["EMAIL_SERVICE_PORT"]
 
+OpenTelemetry::SDK.configure do |c|
+  c.use "OpenTelemetry::Instrumentation::Sinatra"
+end
+
 if ENV["DD_TRACE_OTEL_ENABLED"] == "true"
+  puts "Initializing DD tracer for OTel instrumentation"
   Datadog.configure do |c|
-  end
-else
-  OpenTelemetry::SDK.configure do |c|
-    c.use "OpenTelemetry::Instrumentation::Sinatra"
   end
 end
 
