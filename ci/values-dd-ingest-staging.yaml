@@ -9,8 +9,6 @@ default:
       value: "true"
     - name: DD_AGENT_HOST
       value: $(HOST_IP)
-    - name: OTEL_TRACES_EXPORTER
-      value: "console"
     - name: OTEL_METRICS_EXPORTER
       value: "console"
     - name: OTEL_LOGS_EXPORTER
