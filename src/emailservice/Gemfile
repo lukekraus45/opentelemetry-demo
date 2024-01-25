@@ -10,4 +10,4 @@ gem "sinatra",  "~> 3.0"
 gem "opentelemetry-sdk", "~> 1.2"
 gem "opentelemetry-exporter-otlp", "~> 0.24"
 gem "opentelemetry-instrumentation-all", "~> 0.39"
-gem 'ddtrace', git: 'https://github.com/DataDog/dd-trace-rb', ref: '21c5f42ef98ee4f4c56b10a0f1edd254f10fd438'
+gem 'ddtrace', git: 'https://github.com/DataDog/dd-trace-rb', ref: 'a70370bcdd23c021a39f4869b14eb650ae62f1e7'
