@@ -11,7 +11,7 @@ WORKDIR /tmp
 COPY Gemfile Gemfile.lock ./
 
 #RUN apk update && apk add make gcc musl-dev gcompat && bundle install
-RUN apt-get update && apt-get install build-essential -y && bundle install
+RUN apt-get update && apt-get install build-essential -y && apt-get -y install git && bundle install
 FROM base as release
 
 WORKDIR /email_server
