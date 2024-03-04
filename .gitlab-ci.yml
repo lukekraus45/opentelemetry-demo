@@ -4,7 +4,7 @@ variables:
   CI_IMAGE: registry.ddbuild.io/ci/opentelemetry-collector-contrib:ci-image-2
   RESTORE_CACHE_ATTEMPTS: 2
   BUILD_DD_REGISTRY: registry.ddbuild.io/ci/opentelemetry-demo
-  BUILD_DEMO_REGISTRY: arn:aws:eks:us-east-1:172597598159:cluster/prod-eks-otel-a-us-east-1
+  BUILD_DEMO_REGISTRY: 172597598159.dkr.ecr.us-east-1.amazonaws.com/otel-demo
   BUILD_SANDBOX_REGISTRY: 601427279990.dkr.ecr.us-east-1.amazonaws.com/otel-demo
 stages:
   - build
