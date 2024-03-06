@@ -164,25 +164,25 @@ prod-deploy-otel-demo-eks:
   !!merge <<: *prod-deploy
   variables:
     SCRIPT: ./ci/scripts/ci-deploy-demo.sh
-    CLUSTER_NAME: otel-demo
-    CLUSTER_ARN: arn:aws:eks:us-east-1:172597598159:cluster/otel-demo
+    CLUSTER_NAME: prod-eks-otel-a-us-east-1
+    CLUSTER_ARN: arn:aws:eks:us-east-1:172597598159:cluster/prod-eks-otel-a-us-east-1
     REGION: us-east-1
     NAMESPACE: otel
 prod-deploy-otel-ingest-demo-eks:
   !!merge <<: *prod-deploy
   variables:
     SCRIPT: ./ci/scripts/ci-deploy-demo.sh
-    CLUSTER_NAME: otel-ingest-demo
-    CLUSTER_ARN: arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
-    REGION: us-east-2
+    CLUSTER_NAME: prod-eks-otel-ingest-a-usea-1
+    CLUSTER_ARN: arn:aws:eks:us-east-1:172597598159:cluster/prod-eks-otel-ingest-a-usea-1
+    REGION: us-east-1
     NAMESPACE: otel-ingest
 prod-deploy-otel-ingest-agent-eks:
   !!merge <<: *prod-deploy
   variables:
     SCRIPT: ./ci/scripts/ci-deploy-agent.sh
-    CLUSTER_NAME: otel-ingest-demo
-    CLUSTER_ARN: arn:aws:eks:us-east-2:172597598159:cluster/otel-ingest-demo
-    REGION: us-east-2
+    CLUSTER_NAME: prod-eks-otel-ingest-a-usea-1
+    CLUSTER_ARN: arn:aws:eks:us-east-1:172597598159:cluster/prod-eks-otel-ingest-a-usea-1
+    REGION: us-east-1
     NAMESPACE: otel-ingest
     VALUES: ./ci/datadog-agent-values-prod.yaml
 .staging-deploy: &staging-deploy
