@@ -185,6 +185,7 @@ prod-deploy-otel-ingest-agent-eks:
     REGION: us-east-1
     NAMESPACE: otel-ingest
     VALUES: ./ci/datadog-agent-values-prod.yaml
+    RELEASE_NAME: datadog-agent    
 .staging-deploy: &staging-deploy
   stage: staging-deploy
   tags: ["runner:docker", "size:large"]
