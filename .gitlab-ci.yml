@@ -187,7 +187,6 @@ prod-deploy-otel-ingest-agent-eks:
     VALUES: ./ci/datadog-agent-values-prod.yaml
     RELEASE_NAME: datadog-agent
     DD_VALUES: ./ci/datadog-agent-values.yaml
-
 .staging-deploy: &staging-deploy
   stage: staging-deploy
   tags: ["runner:docker", "size:large"]
