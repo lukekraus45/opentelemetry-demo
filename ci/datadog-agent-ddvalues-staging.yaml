@@ -1,6 +1,6 @@
 agents:
   image:
-    name: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/agent
+    repository: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent
     tag: v30063998-2667a4b9-7-jmx-amd64
     doNotCheckTag: true
 datadog:
