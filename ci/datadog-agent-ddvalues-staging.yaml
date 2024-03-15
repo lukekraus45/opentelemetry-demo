@@ -21,5 +21,3 @@ datadog:
           name: datadog-secrets
           key: api-key
           optional: false
-    - name: DD_OTLP_CONFIG_DEBUG_VERBOSITY
-      value: detailed
