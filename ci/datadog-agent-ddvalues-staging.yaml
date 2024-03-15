@@ -14,8 +14,6 @@ datadog:
           enabled: true
         http:
           enabled: true
-    debug:
-      verbosity: detailed
   env:
     - name: DD_API_KEY
       valueFrom:
@@ -23,3 +21,5 @@ datadog:
           name: datadog-secrets
           key: api-key
           optional: false
+    - name: DD_OTLP_CONFIG_DEBUG_VERBOSITY
+      value: detailed
