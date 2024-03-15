@@ -1,7 +1,7 @@
 agents:
   image:
-    repository: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/agent@sha256
-    tag: 6a22f3cc9e525c47ba8ceaa26bcaa5a7215aad737d2a25fe5f088ff05e0757b1
+    repository: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/agent
+    tag: v30063998-2667a4b9-7-jmx
     doNotCheckTag: true
 datadog:
   apiKey: $DD_API_KEY
