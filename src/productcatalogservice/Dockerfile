@@ -17,7 +17,7 @@ FROM registry.ddbuild.io/images/mirror/alpine:latest AS release
 
 WORKDIR /usr/src/app/
 
-COPY ./src/productcatalogservice/products.json ./
+COPY ./src/productcatalogservice/products/ ./products/
 COPY --from=builder /go/bin/productcatalogservice/ ./
 
 EXPOSE ${PRODUCT_SERVICE_PORT}
