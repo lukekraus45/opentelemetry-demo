@@ -1,20 +1,21 @@
-# Copyright The OpenTelemetry Authors
-# SPDX-License-Identifier: Apache-2.0
-name: Integration Tests
+# # Copyright The OpenTelemetry Authors
+# # SPDX-License-Identifier: Apache-2.0
+# @lukekraus - commented this out for now due to failures reading from the registry. Need to rethink how to run these in CI
+# name: Integration Tests
 
-on:
-  pull_request_review:
-    types:
-      - submitted
+# on:
+#   pull_request_review:
+#     types:
+#       - submitted
 
-jobs:
-  run_tests:
-    runs-on: ubuntu-latest
-    name: "Run CI"
-    if: github.event.review.state == 'APPROVED'
-    steps:
-      - name: check out code
-        uses: actions/checkout@v4
-      - name: run tracetesting
-        run: |
-          make build && make run-tracetesting
+# jobs:
+#   run_tests:
+#     runs-on: ubuntu-latest
+#     name: "Run CI"
+#     if: github.event.review.state == 'APPROVED'
+#     steps:
+#       - name: check out code
+#         uses: actions/checkout@v4
+#       - name: run tracetesting
+#         run: |
+#           make build && make run-tracetesting
